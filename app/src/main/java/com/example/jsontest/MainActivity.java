@@ -37,9 +37,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             HttpHandler sh=new HttpHandler();
-           // String url="http://38.122.193.242:10081/container";
             String url="http://websunrise1:10081/CONTAINER";
             jsonStr=sh.makeServiceCall(url);
+            if (jsonStr==null)
+            {
+                url="http://38.122.193.242:10081/container";
+            }
             if (jsonStr!=null) {
                 try {
                     JSONArray jsonArray = new JSONArray(jsonStr);
