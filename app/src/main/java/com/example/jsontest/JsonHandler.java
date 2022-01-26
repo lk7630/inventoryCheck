@@ -12,12 +12,18 @@ import java.util.List;
 
 public class JsonHandler {
 
+    private List<HashMap<Object, Object>> lotItemList;
+
+    public List<HashMap<Object, Object>> getLotItemList() {
+        return lotItemList;
+    }
+
     public JsonHandler() {
     }
 
     public HashMap<Object, Object> getHashMapFromJson(String jsonStr) {
         HashMap<Object, Object> jsonHashMap = new HashMap<>();
-        HashMap<Object, Object> lotItems = new HashMap<>();
+
         if (jsonStr != null) {
             JSONObject jsonObject;
             try {
@@ -26,8 +32,9 @@ public class JsonHandler {
                 jsonHashMap.put("panID", jsonObject.getInt("panID"));
                 jsonHashMap.put("folder", jsonObject.getString("folder"));
                 jsonHashMap.put("lot", jsonObject.getInt("lot"));
-                List<HashMap<Object, Object>> list = new ArrayList<>();
+                lotItemList = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
+                    HashMap<Object, Object> lotItems = new HashMap<>();
                     JSONObject lotItemsObject = jsonArray.getJSONObject(i);
                     lotItems.put("polymer", lotItemsObject.getString("polymer"));
                     lotItems.put("form", lotItemsObject.getString("form"));
@@ -35,10 +42,9 @@ public class JsonHandler {
                     lotItems.put("packing", lotItemsObject.getString("packing"));
                     lotItems.put("weight", lotItemsObject.getInt("weight"));
                     lotItems.put("warehouse", lotItemsObject.getInt("warehouse"));
-                    list.add(lotItems);
+                    lotItemList.add(lotItems);
                 }
-                jsonHashMap.put("lotItems", list);
-
+                jsonHashMap.put("lotItems", lotItemList);
             } catch (JSONException e) {
                 Log.e("error", "Json parsing error: " + e.getMessage());
                 return null;

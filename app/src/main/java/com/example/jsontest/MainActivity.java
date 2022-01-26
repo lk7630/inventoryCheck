@@ -1,45 +1,111 @@
 package com.example.jsontest;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static android.graphics.Color.RED;
+import static com.example.jsontest.BarcodeScanActivity.BARCODE_KEY;
 
 public class MainActivity extends AppCompatActivity {
     private String jsonStr;
-    ArrayList<HashMap<String, String>> orders;
     HashMap<Object, Object> jsonHashMap;
     private StringFromURLHandler stringFromURLHandler = new StringFromURLHandler();
-    private JsonHandler jsonHandler= new JsonHandler();
+    private JsonHandler jsonHandler = new JsonHandler();
+    private RecyclerView.Adapter listAdapter;
+    RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private EditText bcPanIDTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button connectButton = (Button) findViewById(R.id.button);
-        EditText bcPanIDTextView = (EditText) findViewById(R.id.editTextNumber);
-//        connectButton.setOnClickListener(v -> {
-//            jsonStr = retrieveJson(bcPanIDTextView.getText().toString());
-//            System.out.println(jsonStr);
-//        });
-        stringFromURLHandler.setURL("http://websunrise1:10081/plastic/GetLotInfo/261378");
-        stringFromURLHandler.setBackUpURL("http://192.168.168.8:10081/plastic/GetLotInfo/261378");
-        stringFromURLHandler.getStringFromURL("aa");
-        jsonStr=stringFromURLHandler.getJsonStr();
-        Log.e("log",jsonStr);
-        jsonHashMap=jsonHandler.getHashMapFromJson(jsonStr);
-        Log.e("log",jsonStr);
+        Button scanButton = (Button) findViewById(R.id.scanButton);
+        TextView folderView = (TextView) findViewById(R.id.folderView);
+        TextView lotView = (TextView) findViewById(R.id.lotView);
+        bcPanIDTextView = (EditText) findViewById(R.id.editTextNumber);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
+        stringFromURLHandler.setURL("http://websunrise1:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setBackUpURL("http://192.168.168.8:10081/plastic/GetLotInfo/");
+
+        ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK
+                            || result.getResultCode() == RESULT_FIRST_USER) {
+                        String barcodeText = result.getData().getStringExtra(BARCODE_KEY);
+                        if (result.getResultCode() == RESULT_FIRST_USER) {
+                            barcodeText = "PAN/" + barcodeText;
+                        }
+                        String resultText = processBarcode(barcodeText);
+                        if (resultText.equals("wrong barcode")) {
+                            bcPanIDTextView.setTextColor(RED);
+                            bcPanIDTextView.setText("wrong barcode !");
+                        } else {
+                            bcPanIDTextView.setText(resultText);
+                            //todo - call function to connect
+                            // callAPI(resultText)
+                        }
+                    }
+                });
+
+
+        scanButton.setOnClickListener(v -> {
+            bcPanIDTextView.setText("");
+            Intent scanIntent = new Intent(this, BarcodeScanActivity.class);
+            scanActivityLauncher.launch(scanIntent);
+//            stringFromURLHandler.getStringFromURL(bcPanIDTextView.getText().toString());
+//            jsonStr=stringFromURLHandler.getJsonStr();
+//            jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+//            folderView.setText(jsonHashMap.get("folder").toString() + "   -- ");
+//            lotView.setText(jsonHashMap.get("lot").toString());
+//            List<HashMap<Object, Object>> jsonList = jsonHandler.getLotItemList();
+//            Collections.sort(jsonList,new CustomArraySort("warehouse"));
+        });
+
+
+        //todo - remove
+        jsonStr = "{\"panID\":\"180310\",\"folder\":\"RGPP\",\"lot\":\"2210028\",\"lotItems\"" +
+                ":[{\"polymer\":\"PP\",\"form\":\"RG\",\"packs\":\"9\",\"packing\":" +
+                "\"super sack\",\"weight\":\"10800\",\"warehouse\":\"14\"},{\"polymer" +
+                "\":\"PP\",\"form\":\"RG\",\"packs\":\"2\",\"packing\":\"super sack\"," +
+                "\"weight\":\"2400\",\"warehouse\":\"9\"}]}";
+        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+        folderView.setText(jsonHashMap.get("folder").toString() + "   -- ");
+        lotView.setText(jsonHashMap.get("lot").toString());
+        List<HashMap<Object, Object>> jsonList = jsonHandler.getLotItemList();
+        Collections.sort(jsonList, new CustomArraySort("warehouse"));
+        layoutManager = new GridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(layoutManager);
+        listAdapter = new ViewAdapter(jsonList);
+        recyclerView.setAdapter(listAdapter);
+        recyclerView.setHasFixedSize(true);
+        Log.e("log", jsonStr);
+
+    }
+
+    private String processBarcode(String barcode) {
+        String stringPattern = "^PAN/\\d{6,}";//start with PAN/ and has min of 6 numbers
+        Pattern pattern = Pattern.compile(stringPattern);
+        boolean isValid = pattern.matcher(barcode).matches();
+        return isValid ? barcode.replaceAll("PAN/", "").trim()
+                : "wrong barcode!";
     }
 
 }

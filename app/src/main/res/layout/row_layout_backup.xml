@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0">
+
+
+    <TextView
+        android:id="@+id/warehouseLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Warehouse"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/warehouseView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/warehouseLabel"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="5dp"
+        android:text="WH#"
+        android:textSize="35sp" />
+
+    <TextView
+        android:id="@+id/polymerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/warehouseLabel"
+        android:text="Polymer"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/formView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="40dp"
+        android:layout_toRightOf="@+id/polymerView"
+        android:text="Form"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/packsView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/warehouseLabel"
+        android:layout_marginTop="12dp"
+        android:layout_toRightOf="@id/warehouseLabel"
+        android:text="packs"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/packingView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/warehouseLabel"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_toStartOf="@+id/weightView"
+        android:text="packing"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/weightView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/warehouseLabel"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:text="weight"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/rowDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_below="@+id/weightView"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray" />
+
+<!--    <View-->
+<!--        android:id="@+id/lineDivider"-->
+<!--        android:layout_width="1dp"-->
+<!--        android:layout_height="20dp"-->
+<!--        android:layout_below="@+id/weightView"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:background="@android:color/darker_gray" />-->
+
+</RelativeLayout>

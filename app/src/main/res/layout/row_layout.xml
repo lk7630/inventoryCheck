@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0">
+
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="2dp"
+        android:layout_marginTop="2dp">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="clip_horizontal|center">
+
+            <TextView
+                android:id="@+id/warehouseLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WH#"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <View
+                android:id="@+id/lineDivider"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:background="@android:color/white" />
+
+            <TextView
+                android:id="@+id/emptyView"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:minWidth="50dp"
+                android:textAlignment="textEnd"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/polymerView"
+                android:layout_height="wrap_content"
+                android:text="Polymer"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/formView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Form"
+                android:textSize="24sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center">
+
+            <TextView
+                android:id="@+id/warehouseView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WH#"
+                android:textAlignment="center"
+                android:textSize="35sp" />
+
+            <View
+                android:id="@+id/lineDivider2"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/packsView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="packs"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/packingView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="120dp"
+                android:text="packing"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/weightView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
+                android:text="weight"
+                android:textAlignment="textEnd"
+                android:textSize="24sp" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <View
+        android:id="@+id/rowDivider"
+        android:layout_below="@id/tableLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/darker_gray" />
+
+</RelativeLayout>
