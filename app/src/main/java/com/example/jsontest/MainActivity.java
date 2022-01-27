@@ -2,7 +2,6 @@ package com.example.jsontest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter listAdapter;
     RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private EditText bcPanIDTextView;
+    public  EditText bcPanIDTextView;
+    TextView folderView;
+    TextView lotView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         Button scanButton = (Button) findViewById(R.id.scanButton);
         bcPanIDTextView = (EditText) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        folderView = (TextView) findViewById(R.id.folderView);
+        lotView = (TextView) findViewById(R.id.lotView);
 
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
                             jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
                             List<HashMap<Object, Object>> jsonList = jsonHandler.getLotItemList();
                             displayLot(jsonHashMap);
+                            displayList((jsonList));
                         }
                     }
                 });
@@ -83,22 +87,20 @@ public class MainActivity extends AppCompatActivity {
                 : "wrong barcode!";
     }
 
-    private String returnStringFromAPI(String bcPanID){
+    private String returnStringFromAPI(String bcPanID) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler();
-        stringFromURLHandler.setURL("http://websunrise1:10081/plastic/GetLotInfo/");
-        stringFromURLHandler.setBackUpURL("http://192.168.168.8:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setURL("http://192.168.168.8:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setBackUpURL("http://websunrise1:10081/plastic/GetLotInfo/");
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 
 
-    private void displayLot(HashMap<Object, Object> jsonHashMap){
-        TextView folderView = (TextView) findViewById(R.id.folderView);
-        TextView lotView = (TextView) findViewById(R.id.lotView);
+    private void displayLot(HashMap<Object, Object> jsonHashMap) {
         folderView.setText(jsonHashMap.get("folder").toString() + "   -- ");
         lotView.setText(jsonHashMap.get("lot").toString());
     }
 
-    private void displayList(List<HashMap<Object,Object>> jsonList){
+    private void displayList(List<HashMap<Object, Object>> jsonList) {
         Collections.sort(jsonList, new CustomArraySort("warehouse"));
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);

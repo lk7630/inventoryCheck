@@ -1,7 +1,14 @@
 package com.example.jsontest;
 
+import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.EditText;
+import android.widget.TextView;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class StringFromURLHandler {
 
@@ -10,6 +17,8 @@ public class StringFromURLHandler {
     private String backUpURL;
     private HttpHandler httpHandler = new HttpHandler();
 
+    public StringFromURLHandler() {
+    }
 
     public String getJsonStr() {
         return jsonStr;
@@ -34,6 +43,14 @@ public class StringFromURLHandler {
                         : httpHandler.makeServiceCall(backUpURL + param);
             }
         });
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(30, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return jsonStr;
     }
 }
