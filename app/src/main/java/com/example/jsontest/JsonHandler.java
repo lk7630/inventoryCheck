@@ -38,10 +38,10 @@ public class JsonHandler {
                     JSONObject lotItemsObject = jsonArray.getJSONObject(i);
                     lotItems.put("polymer", lotItemsObject.getString("polymer"));
                     lotItems.put("form", lotItemsObject.getString("form"));
-                    lotItems.put("packs", lotItemsObject.getInt("packs"));
+                    lotItems.put("packs", lotItemsObject.getString("packs"));
                     lotItems.put("packing", lotItemsObject.getString("packing"));
-                    lotItems.put("weight", lotItemsObject.getInt("weight"));
-                    lotItems.put("warehouse", lotItemsObject.getInt("warehouse"));
+                    lotItems.put("weight", lotItemsObject.getString("weight"));
+                    lotItems.put("warehouse", lotItemsObject.getString("warehouse"));
                     lotItemList.add(lotItems);
                 }
                 jsonHashMap.put("lotItems", lotItemList);

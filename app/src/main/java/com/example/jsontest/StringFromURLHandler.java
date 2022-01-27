@@ -35,13 +35,9 @@ public class StringFromURLHandler {
     public String getStringFromURL(String param) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = (param == null || param.isEmpty()) ? httpHandler.makeServiceCall(URL)
-                    : httpHandler.makeServiceCall(URL + param);
-            if (jsonStr == null && backUpURL != null) {
-                jsonStr = (param == null || param.isEmpty())
-                        ? httpHandler.makeServiceCall(backUpURL)
-                        : httpHandler.makeServiceCall(backUpURL + param);
-            }
+            jsonStr = httpHandler.makeServiceCall(URL + param);
+            jsonStr = backUpURL != null && jsonStr == null ?
+                    httpHandler.makeServiceCall(backUpURL + param) : jsonStr;
         });
         executorService.shutdown();
         try {
