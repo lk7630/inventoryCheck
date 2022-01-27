@@ -8,7 +8,7 @@ public class StringFromURLHandler {
     private String jsonStr;
     private String URL;
     private String backUpURL;
-    private HttpHandler httpHandler =new HttpHandler();
+    private HttpHandler httpHandler = new HttpHandler();
 
 
     public String getJsonStr() {
@@ -23,13 +23,17 @@ public class StringFromURLHandler {
         this.backUpURL = backUpURL;
     }
 
-    public void getStringFromURL(String param) {
+    public String getStringFromURL(String param) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = httpHandler.makeServiceCall(URL);
-            if (jsonStr == null && backUpURL != null){
-                jsonStr = httpHandler.makeServiceCall(backUpURL);
+            jsonStr = (param == null || param.isEmpty()) ? httpHandler.makeServiceCall(URL)
+                    : httpHandler.makeServiceCall(URL + param);
+            if (jsonStr == null && backUpURL != null) {
+                jsonStr = (param == null || param.isEmpty())
+                        ? httpHandler.makeServiceCall(backUpURL)
+                        : httpHandler.makeServiceCall(backUpURL + param);
             }
         });
+        return jsonStr;
     }
 }
