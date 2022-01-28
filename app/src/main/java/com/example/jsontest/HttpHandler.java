@@ -10,20 +10,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class HttpHandler {
-    private static final String TAG=HttpHandler.class.getSimpleName();
+    private static final String TAG = HttpHandler.class.getSimpleName();
 
-    public HttpHandler(){
+    public HttpHandler() {
     }
 
-    public String makeServiceCall(String reqUrl){
-        String response=null;
+    public String makeServiceCall(String reqUrl) {
+        String response = null;
         try {
-            URL url= new URL(reqUrl);
-            HttpURLConnection conn=(HttpURLConnection) url.openConnection();
+            URL url = new URL(reqUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
-            InputStream in=new BufferedInputStream(conn.getInputStream());
-            response=convertStreamToString(in);
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+            response = convertStreamToString(in);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -33,8 +33,8 @@ public class HttpHandler {
     }
 
     private String convertStreamToString(InputStream is) {
-        BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb=new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
 
         String line;
         try {
@@ -50,7 +50,6 @@ public class HttpHandler {
                 e.printStackTrace();
             }
         }
-
         return sb.toString();
     }
 }

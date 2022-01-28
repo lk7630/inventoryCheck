@@ -1,11 +1,5 @@
 package com.example.jsontest;
 
-import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.EditText;
-import android.widget.TextView;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

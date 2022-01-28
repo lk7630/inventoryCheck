@@ -96,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void displayLot(HashMap<Object, Object> jsonHashMap) {
+        if (jsonStr == null){
+            folderView.setText("NO INFO");
+            return;
+        }
         folderView.setText(jsonHashMap.get("folder").toString() + "   -- ");
         lotView.setText(jsonHashMap.get("lot").toString());
     }
