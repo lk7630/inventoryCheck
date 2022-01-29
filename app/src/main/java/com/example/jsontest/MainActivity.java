@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         bcPanIDTextView = (EditText) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         folderView = (TextView) findViewById(R.id.folderView);
-        lotView = (TextView) findViewById(R.id.lotView);
 
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -100,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
             folderView.setText("NO INFO");
             return;
         }
-        folderView.setText(jsonHashMap.get("folder").toString() + "   -- ");
-        lotView.setText(jsonHashMap.get("lot").toString());
+        folderView.setText(String.format("%s - %s", jsonHashMap.get("folder").toString(),
+                jsonHashMap.get("lot").toString()));
     }
 
     private void displayList(List<HashMap<Object, Object>> jsonList) {
