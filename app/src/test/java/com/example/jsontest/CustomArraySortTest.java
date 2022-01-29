@@ -36,10 +36,26 @@ public class CustomArraySortTest {
     }
 
     @Test
+    public void compare_SwitchToDefaultKey_Correctly(){
+        customArraySort.setKeyToSort("anyKey");
+        customArraySort.compare(o1, o2);
+        String result = customArraySort.getKeyToSort();
+        assertEquals(DEFAULT_KEY, result);
+    }
+
+    @Test
     public void compare_ComparesString_Polymer() {
         customArraySort.setKeyToSort("polymer");
         int result = customArraySort.compare(o1, o2);
         assertTrue(result<0);
+    }
+
+    @Test
+    public void compare_ComparesString_Polymer_Desc() {
+        customArraySort.setDescOrder(true);
+        customArraySort.setKeyToSort("polymer");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result>0);
     }
 
     @Test
@@ -58,11 +74,58 @@ public class CustomArraySortTest {
     }
 
     @Test
+    public void compare_CompareString_weight_Desc(){
+        customArraySort.setDescOrder(true);
+        customArraySort.setKeyToSort("weight");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result > 0);
+    }
+
+    @Test
     public void compare_CompareString_weight_equal(){
         customArraySort.setKeyToSort("weight");
         o2.replace("weight", "5600");
         int result = customArraySort.compare(o1, o2);
         assertEquals(0, result);
+    }
+
+    @Test
+    public void compare_CompareString_warehouse(){
+        customArraySort.setKeyToSort("warehouse");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result < 0);
+    }
+
+    @Test
+    public void compare_CompareString_warehouse_Desc(){
+        customArraySort.setKeyToSort("warehouse");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result < 0);
+    }
+
+    @Test
+    public void compare_CompareString_warehouse_equal(){
+        o1.replace("warehouse", "12C");
+        customArraySort.setKeyToSort("warehouse");
+        int result = customArraySort.compare(o1, o2);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void compare_CompareString_warehouse_ValueNotInList(){
+        o1.replace("warehouse", "50AB");
+        customArraySort.setKeyToSort("warehouse");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result > 0);
+    }
+
+    @Test
+    public void compare_CompareString_warehouse_ValueNotInList_Desc(){
+        o1.replace("warehouse", "50AB");
+        customArraySort.setDescOrder(true);
+        customArraySort.setKeyToSort("warehouse");
+        int result = customArraySort.compare(o1, o2);
+        assertTrue(result < 0);
     }
 
     private HashMap<Object, Object> setUpHashMapObject(List<String> keys, List<String> values) {

@@ -163,9 +163,11 @@ public class BarcodeScanActivity extends AppCompatActivity {
         imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ImageAnalysis.Analyzer() {
             @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
-                @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"}) Image mediaImage = imageProxy.getImage();
+                @SuppressLint({"UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
+                Image mediaImage = imageProxy.getImage();
                 if (mediaImage != null) {
-                    InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+                    InputImage image = InputImage.fromMediaImage(mediaImage,
+                            imageProxy.getImageInfo().getRotationDegrees());
 
                     Task<List<Barcode>> result = scanner.process(image);// get a list of barcode
                     result.addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
@@ -177,7 +179,8 @@ public class BarcodeScanActivity extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Could not detect barcode!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Could not detect barcode!"
+                                    , Toast.LENGTH_SHORT).show();
 
                         }
                     }).addOnCompleteListener(new OnCompleteListener<List<Barcode>>() {
@@ -193,11 +196,7 @@ public class BarcodeScanActivity extends AppCompatActivity {
 
 
         cameraProvider.unbindAll();
-        // Toast.makeText(this, String.valueOf(cameraProviderFuture.isDone()), Toast.LENGTH_SHORT).show();
         camera = cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
-        // Toast.makeText(this, String.valueOf(cameraProviderFuture.isDone()), Toast.LENGTH_SHORT).show();
-
-
     }
 
     private void manualInput() {
@@ -221,7 +220,6 @@ public class BarcodeScanActivity extends AppCompatActivity {
                 if (barcodeText != null) {
                     Intent intent = new Intent();
                     intent.putExtra(BARCODE_KEY, barcodeText);
-                    // Toast.makeText(getApplicationContext(), barcodeText, Toast.LENGTH_SHORT).show();
                     setResult(RESULT_FIRST_USER, intent);
                 } else {
                     setResult(RESULT_CANCELED);
@@ -253,7 +251,6 @@ public class BarcodeScanActivity extends AppCompatActivity {
                 if (barcodeText != null) {
                     Intent intent = new Intent();
                     intent.putExtra(BARCODE_KEY, barcodeText);
-                    // Toast.makeText(getApplicationContext(), barcodeText, Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK, intent);
                 } else {
                     setResult(RESULT_CANCELED);
