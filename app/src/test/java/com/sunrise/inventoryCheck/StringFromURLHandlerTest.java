@@ -1,9 +1,7 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class StringFromURLHandlerTest {
 

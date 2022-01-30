@@ -1,4 +1,4 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

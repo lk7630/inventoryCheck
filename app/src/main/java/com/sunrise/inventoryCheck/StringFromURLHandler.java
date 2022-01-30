@@ -1,4 +1,4 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

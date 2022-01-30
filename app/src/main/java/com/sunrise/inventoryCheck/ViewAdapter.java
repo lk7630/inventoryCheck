@@ -1,4 +1,4 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import android.view.LayoutInflater;
 import android.view.View;

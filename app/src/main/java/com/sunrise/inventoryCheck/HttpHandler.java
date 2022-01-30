@@ -1,4 +1,4 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -24,8 +24,6 @@ public class HttpHandler {
 
             InputStream in = new BufferedInputStream(conn.getInputStream());
             response = convertStreamToString(in);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

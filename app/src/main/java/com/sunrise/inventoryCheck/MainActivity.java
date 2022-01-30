@@ -1,7 +1,6 @@
-package com.example.jsontest;
+package com.sunrise.inventoryCheck;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,10 +24,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static android.graphics.Color.*;
-import static android.graphics.Color.BLACK;
 import static android.graphics.Color.RED;
 import static androidx.recyclerview.widget.RecyclerView.*;
-import static com.example.jsontest.BarcodeScanActivity.BARCODE_KEY;
+import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
 import static java.util.Arrays.asList;
 
 public class MainActivity extends AppCompatActivity {
