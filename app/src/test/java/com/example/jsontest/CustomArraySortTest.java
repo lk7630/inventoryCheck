@@ -25,7 +25,7 @@ public class CustomArraySortTest {
         List<String> keys = asList("polymer", "form", "packs", "packing", "weight", "warehouse");
         o1 = setUpHashMapObject(keys, asList("HDPE", "PEL", "12", "super sack", "5600", "3"));
         o2 = setUpHashMapObject(keys, asList("PPPP", "POW", "14", "box", "8000", "12C"));
-        customArraySort = new CustomArraySort(WRONG_KEY);
+        customArraySort = new CustomArraySort(WRONG_KEY, false);
     }
 
     @Test

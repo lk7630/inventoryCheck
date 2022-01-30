@@ -11,7 +11,7 @@ public class CustomArraySort implements Comparator<HashMap<Object, Object>> {
     private String keyToSort;
     private final String DEFAULT_KEY = "warehouse";
     private List<String> warehouseList = asList("1", "2", "3", "4", "5", "6", "7", "8",
-            "9", "11", "12", "12B", "12C", "14A", "15", "16");
+            "9", "11", "12", "12B", "12C", "14", "14A", "15", "16");
     private boolean isDescOrder = false;
 
     public String getKeyToSort() {
@@ -22,8 +22,9 @@ public class CustomArraySort implements Comparator<HashMap<Object, Object>> {
         this.keyToSort = keyToSort;
     }
 
-    public CustomArraySort(String keyToSort) {
+    public CustomArraySort(String keyToSort, boolean isDescOrder) {
         this.keyToSort = keyToSort;
+        this.isDescOrder = isDescOrder;
     }
 
     public void setDescOrder(boolean descOrder) {
