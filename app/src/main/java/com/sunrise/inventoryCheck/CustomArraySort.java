@@ -10,7 +10,7 @@ public class CustomArraySort implements Comparator<HashMap<Object, Object>> {
 
     private String keyToSort;
     private final String DEFAULT_KEY = "warehouse";
-    private List<String> warehouseList = asList("1", "2", "3", "4", "5", "6", "7", "8",
+    private final List<String> warehouseList = asList("1", "2", "3", "4", "5", "6", "7", "8",
             "9", "11", "12", "12B", "12C", "14", "14A", "15", "16");
     private boolean isDescOrder = false;
 
