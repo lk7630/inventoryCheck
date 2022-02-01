@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         dscText = (TextView) findViewById(R.id.dscText);
         isDescOrder = false;
 
+        //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                             bcPanIDTextView.setText(resultText);
                             jsonStr = returnStringFromAPI(resultText);
                             jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-                            List<HashMap<Object, Object>> jsonList = jsonHandler.getLotItemList();
+                            jsonList = jsonHandler.getLotItemList();
                             displayLot(jsonHashMap);
                             displayList((jsonList), "warehouse", isDescOrder);
                         }
@@ -122,16 +123,16 @@ public class MainActivity extends AppCompatActivity {
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
         //todo - remove
         ///////
-        jsonStr = "{\"panID\":\"180310\",\"folder\":\"RGPP\",\"lot\":\"2210028\",\"lotItems\"" +
-                ":[{\"polymer\":\"PP\",\"form\":\"RG\",\"packs\":\"9\",\"packing\":" +
-                "\"super sack\",\"weight\":\"10800\",\"warehouse\":\"14\"},{\"polymer" +
-                "\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"2\",\"packing\":\"box\"," +
-                "\"weight\":\"2400\",\"warehouse\":\"16\"}]}";
-
-        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-        jsonList = jsonHandler.getLotItemList();
-        displayLot(jsonHashMap);
-        displayList((jsonList), "warehouse", isDescOrder);
+//        jsonStr = "{\"panID\":\"180310\",\"folder\":\"RGPP\",\"lot\":\"2210028\",\"lotItems\"" +
+//                ":[{\"polymer\":\"PP\",\"form\":\"RG\",\"packs\":\"9\",\"packing\":" +
+//                "\"super sack\",\"weight\":\"10800\",\"warehouse\":\"14\"},{\"polymer" +
+//                "\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"2\",\"packing\":\"box\"," +
+//                "\"weight\":\"2400\",\"warehouse\":\"16\"}]}";
+//
+//        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+//        jsonList = jsonHandler.getLotItemList();
+//        displayLot(jsonHashMap);
+//        displayList((jsonList), "warehouse", isDescOrder);
         List<String> sortArrayList = asList("warehouse", "polymer", "packing");
         loadSpinner(sortArrayList);
         ////////
@@ -174,12 +175,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSpinner(List<String> sortArrayList) {
-        if (jsonStr == null) {
-            sortArrayList = new ArrayList<>();
-        }
+//        if (jsonStr == null) {
+//            sortArrayList = new ArrayList<>();
+//        }
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
                 R.layout.support_simple_spinner_dropdown_item, sortArrayList);
         sortSpinner.setAdapter(spinnerAdapter);
+        sortSpinner.setSelection(0);
+        sortKey = sortArrayList.get(0);
     }
 
 }
