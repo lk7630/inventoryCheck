@@ -29,6 +29,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         public TextView packs;
         public TextView packing;
         public TextView weight;
+        public TextView compartment;
+        public TextView grade;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -37,6 +39,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             warehouse = (TextView) itemView.findViewById(R.id.warehouseView);
             polymer = (TextView) itemView.findViewById(R.id.polymerView);
             form = (TextView) itemView.findViewById(R.id.formView);
+            compartment = (TextView) itemView.findViewById(R.id.compView);
+            grade = (TextView) itemView.findViewById(R.id.gradeView);
             packs = (TextView) itemView.findViewById(R.id.packsView);
             packing = (TextView) itemView.findViewById(R.id.packingView);
             weight = (TextView) itemView.findViewById(R.id.weightView);
@@ -54,22 +58,33 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder mholder, int mposition) {
         holder = mholder;
         position = mposition;
-        String warehouse = (String) values.get(position).get("warehouse").toString();
-        String polymer = (String) values.get(position).get("polymer");
-        String form = (String) values.get(position).get("form");
-        String packs = (String) values.get(position).get("packs").toString();
-        String packing = (String) values.get(position).get("packing");
-        String weight = (String) values.get(position).get("weight").toString();
+        String warehouse = getValueFrom("warehouse", position);
+        String polymer = getValueFrom("polymer", position);
+        String form = getValueFrom("form", position);
+        String compartment = getValueFrom("compartment", position);
+        String grade = getValueFrom("grade", position);
+        String packs = getValueFrom("packs", position);
+        String packing = getValueFrom("packing", position);
+        String weight = getValueFrom("weight", position);
 
         holder.warehouse.setText(warehouse);
         holder.polymer.setText(polymer);
         holder.form.setText(form);
+        holder.compartment.setText("/" + compartment);
+        holder.grade.setText(grade.equals("PARTIAL")?"P":" ");
         holder.packs.setText(packs);
         holder.packing.setText(packing);
         holder.weight.setText(weight + " lbs");
     }
+
     @Override
     public int getItemCount() {
         return values.size();
     }
+
+    private String getValueFrom(String objectKey, int pos) {
+        String returnResult = (String) values.get(pos).get(objectKey);
+        return returnResult == "null" ? "" : returnResult;
+    }
+
 }
