@@ -23,27 +23,27 @@ public class JsonHandler {
 
     public HashMap<Object, Object> getHashMapFromJson(String jsonStr) {
         HashMap<Object, Object> jsonHashMap = new HashMap<>();
-
         if (jsonStr != null) {
             JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(jsonStr);
                 JSONArray jsonArray = jsonObject.getJSONArray("lotItems");
-                jsonHashMap.put("panID", jsonObject.getInt("panID"));
-                jsonHashMap.put("folder", jsonObject.getString("folder"));
-                jsonHashMap.put("lot", jsonObject.getInt("lot"));
+                jsonHashMap.put("panID", parseStringFromJsonObject(jsonObject, "panID"));
+                jsonHashMap.put("folder", parseStringFromJsonObject(jsonObject, "folder"));
+                jsonHashMap.put("lot", parseStringFromJsonObject(jsonObject, "lot"));
+
                 lotItemList = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
                     HashMap<Object, Object> lotItems = new HashMap<>();
                     JSONObject lotItemsObject = jsonArray.getJSONObject(i);
-                    lotItems.put("polymer", lotItemsObject.getString("polymer"));
-                    lotItems.put("form", lotItemsObject.getString("form"));
-                    lotItems.put("compartment", lotItemsObject.getString("compartment"));
-                    lotItems.put("grade", lotItemsObject.getString("grade"));
-                    lotItems.put("packs", lotItemsObject.getString("packs"));
-                    lotItems.put("packing", lotItemsObject.getString("packing"));
-                    lotItems.put("weight", lotItemsObject.getString("weight"));
-                    lotItems.put("warehouse", lotItemsObject.getString("warehouse"));
+                    lotItems.put("polymer", parseStringFromJsonObject(lotItemsObject, "polymer"));
+                    lotItems.put("form", parseStringFromJsonObject(lotItemsObject, "form"));
+                    lotItems.put("compartment", parseStringFromJsonObject(lotItemsObject, "compartment"));
+                    lotItems.put("grade", parseStringFromJsonObject(lotItemsObject, "grade"));
+                    lotItems.put("packs", parseStringFromJsonObject(lotItemsObject, "packs"));
+                    lotItems.put("packing", parseStringFromJsonObject(lotItemsObject, "packing"));
+                    lotItems.put("weight", parseStringFromJsonObject(lotItemsObject, "weight"));
+                    lotItems.put("warehouse", parseStringFromJsonObject(lotItemsObject, "warehouse"));
                     lotItemList.add(lotItems);
                 }
                 jsonHashMap.put("lotItems", lotItemList);
@@ -53,5 +53,17 @@ public class JsonHandler {
             }
         }
         return jsonHashMap;
+    }
+
+    private String parseStringFromJsonObject(JSONObject jsonObject, String key) {
+        try {
+            return jsonObject.getString(key).equals("null") || jsonObject.getString(key).equals("")
+                    ? "" : jsonObject.getString(key);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("Error", "Cannot get value from key " + key);
+            return null;
+        }
     }
 }
