@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +21,7 @@ public class StringFromURLHandlerTest {
         stringFromURLHandler = new StringFromURLHandler();
         httpHandler = new HttpHandler();
         stringFromURLHandler.setURL(DEFAULT_URL);
-        when(httpHandler.makeServiceCall(anyString())).thenReturn("anyString");
+ //       when(httpHandler.makeServiceCall(anyString())).thenReturn("anyString");
     }
 
    @Test
@@ -41,6 +42,6 @@ public class StringFromURLHandlerTest {
     @Test
     public void getStringFromURL_CallsHttpHandler(){
         stringFromURLHandler.getStringFromURL("anyString");
-        verify(httpHandler).makeServiceCall(DEFAULT_URL + "anyString");
+        verify(httpHandler).makeServiceCall();
     }
 }

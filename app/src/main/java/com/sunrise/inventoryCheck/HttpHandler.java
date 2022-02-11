@@ -11,20 +11,32 @@ import java.net.URL;
 
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
+    private URL url;
 
     public HttpHandler() {
     }
 
-    public String makeServiceCall(String reqUrl) {
+    public void setUrl(URL url) {
+            this.url = url;
+    }
+
+    public void setUrlFromString(String reqURL) {
+        try {
+            this.url = new URL(reqURL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String makeServiceCall() {
         String response = null;
         try {
-            URL url = new URL(reqUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
             InputStream in = new BufferedInputStream(conn.getInputStream());
             response = convertStreamToString(in);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;

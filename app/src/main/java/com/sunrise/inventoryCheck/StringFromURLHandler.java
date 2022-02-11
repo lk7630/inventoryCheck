@@ -9,9 +9,10 @@ public class StringFromURLHandler {
     private String jsonStr;
     private String URL;
     private String backUpURL;
-    private HttpHandler httpHandler = new HttpHandler();
+    private HttpHandler httpHandler;
 
     public StringFromURLHandler() {
+        this.httpHandler = new HttpHandler();
     }
 
     public String getJsonStr() {
@@ -29,9 +30,9 @@ public class StringFromURLHandler {
     public String getStringFromURL(String param) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = httpHandler.makeServiceCall(URL + param);
+            jsonStr = returnString(URL + param);
             jsonStr = backUpURL != null && jsonStr == null ?
-                    httpHandler.makeServiceCall(backUpURL + param) : jsonStr;
+                    returnString(backUpURL + param) : jsonStr;
         });
         executorService.shutdown();
         try {
@@ -42,5 +43,10 @@ public class StringFromURLHandler {
             e.printStackTrace();
         }
         return jsonStr;
+    }
+
+    private String returnString(String string) {
+        httpHandler.setUrlFromString(string);
+        return httpHandler.makeServiceCall();
     }
 }

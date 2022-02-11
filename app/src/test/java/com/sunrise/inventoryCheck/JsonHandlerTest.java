@@ -20,8 +20,8 @@ import static org.junit.Assert.assertNull;
 
 public class JsonHandlerTest {
 
-    @Mock
-    JSONObject jsonObject;
+
+    private JSONObject jsonObject;
     @InjectMocks
     private JsonHandler jsonHandler;
     private String jsonList;
