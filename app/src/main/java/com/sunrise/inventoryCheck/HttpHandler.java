@@ -20,6 +20,10 @@ public class HttpHandler {
             this.url = url;
     }
 
+    public URL getUrl() {
+        return url;
+    }
+
     public void setUrlFromString(String reqURL) {
         try {
             this.url = new URL(reqURL);

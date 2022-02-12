@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -154,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String returnStringFromAPI(String bcPanID) {
-        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler();
-        stringFromURLHandler.setURL("http://192.168.168.8:10081/plastic/GetLotInfo/");
+        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
+        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
         stringFromURLHandler.setBackUpURL("http://websunrise1:10081/plastic/GetLotInfo/");
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
