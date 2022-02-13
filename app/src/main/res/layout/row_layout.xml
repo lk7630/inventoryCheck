@@ -41,7 +41,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:text="Polymer"
-                android:textAlignment="center"
+                android:minWidth="80dp"
+                android:textAlignment="textStart"
                 android:textSize="24sp" />
 
             <TextView
@@ -57,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:minWidth="30dp"
+                android:minWidth="40dp"
                 android:text="Comp"
                 android:textSize="24sp" />
 
@@ -66,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:minWidth="10dp"
                 android:text="Gr"
                 android:textSize="24sp" />
 

@@ -11,6 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.BLUE;
+import static android.graphics.Color.RED;
+import static android.graphics.Color.rgb;
+import static android.graphics.Typeface.BOLD_ITALIC;
+
 public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
     private List<HashMap<Object, Object>> values;
@@ -67,14 +73,24 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         String packing = getValueFrom("packing", position);
         String weight = getValueFrom("weight", position);
 
-        holder.warehouse.setText(warehouse);
-        holder.polymer.setText(polymer);
-        holder.form.setText(form);
-        holder.compartment.setText("/" + compartment);
-        holder.grade.setText(grade.equals("PARTIAL")?"P":" ");
-        holder.packs.setText(packs);
-        holder.packing.setText(packing);
-        holder.weight.setText(weight + " lbs");
+//        holder.warehouse.setText(warehouse);
+//        holder.polymer.setText(polymer);
+//        holder.form.setText(form);
+//        holder.compartment.setText("/" + compartment);
+//        holder.grade.setText(grade.equals("PARTIAL") ? "P" : " ");
+//        holder.packs.setText(packs);
+//        holder.packing.setText(packing);
+//        holder.weight.setText(weight + " lbs");
+        showText(holder.warehouse, warehouse);
+        showText(holder.polymer, polymer);
+        showText(holder.form, form);
+        showText(holder.compartment, compartment);
+        showText(holder.grade, grade);
+        showText(holder.packs, packs);
+        showText(holder.packing, packing);
+        showText(holder.weight, weight);
+
+
     }
 
     @Override
@@ -84,7 +100,43 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
     private String getValueFrom(String objectKey, int pos) {
         String returnResult = (String) values.get(pos).get(objectKey);
-        return returnResult == "null" ? "" : returnResult;
+        return returnResult.equals("null") ? "" : returnResult;
+    }
+
+    private void showText(TextView textView, String variable) {
+        if (textView.getId() == R.id.polymerView) {
+            customizeView(variable, "polymer");
+        } else if (textView.getId() == R.id.gradeView) {
+            variable = variable.equals("PARTIAL") ? "P" : "";
+            holder.grade.setTypeface(holder.grade.getTypeface(), BOLD_ITALIC);
+        } else if (textView.getId() == R.id.weightView) {
+            variable = variable + " lbs";
+        } else if (textView.getId() == R.id.compView) {
+            variable = "/" + variable;
+        }
+        textView.setText(variable);
+    }
+
+    private void customizeView(String variable, String textViewName) {
+        if (textViewName.equals("polymer")) {
+            switch (variable) {
+                case "HDPE":
+                    holder.polymer.setTextColor(BLUE);
+                    break;
+                case "LDPE":
+                    holder.polymer.setTextColor(rgb(4, 148, 33));
+                    break;
+                case "PP":
+                    holder.polymer.setTextColor(RED);
+                    break;
+                case "PS":
+                    holder.polymer.setTextColor(rgb(255, 165, 0));
+                    break;
+                default:
+                    holder.polymer.setTextColor(BLACK);
+                    break;
+            }
+        }
     }
 
 }

@@ -23,9 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static android.graphics.Color.*;
+import static android.graphics.Color.GRAY;
 import static android.graphics.Color.RED;
-import static androidx.recyclerview.widget.RecyclerView.*;
+import static android.graphics.Color.rgb;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
 import static java.util.Arrays.asList;
 
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private LayoutManager layoutManager;
     public TextView bcPanIDTextView;
     private TextView folderView;
+    private TextView totalWeightView;
     private Spinner sortSpinner;
     private List<HashMap<Object, Object>> jsonList;
     private TextView ascText;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         bcPanIDTextView = (TextView) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         folderView = (TextView) findViewById(R.id.folderView);
+        totalWeightView = (TextView) findViewById(R.id.totalWeightView);
         sortSpinner = (Spinner) findViewById(R.id.spinner);
         ascText = (TextView) findViewById(R.id.ascText);
         dscText = (TextView) findViewById(R.id.dscText);
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                             jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
                             jsonList = jsonHandler.getLotItemList();
                             displayLot(jsonHashMap);
+                            displayTotalWeight(jsonHashMap);
                             displayList((jsonList), "warehouse", isDescOrder);
                         }
                     }
@@ -123,23 +128,25 @@ public class MainActivity extends AppCompatActivity {
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
         //todo - remove
         ///////
-        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
-                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
-                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
-                ":\"PARTIAL\"},{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"24\"," +
-                "\"packing\":\"super sack\",\"weight\":\"52920\",\"warehouse\":\"3\"," +
-                "\"compartment\":\"A\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":\"PEL\"," +
-                "\"packs\":\"30\",\"packing\":\"super sack\",\"weight\":\"66150\",\"warehouse\":" +
-                "\"3\",\"compartment\":\"B\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":" +
-                "\"PEL\",\"packs\":\"12\",\"packing\":\"super sack\",\"weight\":\"26460\"," +
-                "\"warehouse\":\"3\",\"compartment\":\"CA\",\"grade\":null},{\"polymer\":\"HDPE\"," +
-                "\"form\":\"PEL\",\"packs\":\"22\",\"packing\":\"super sack\",\"weight\":\"48510\"," +
-                "\"warehouse\":\"3\",\"compartment\":\"CB\",\"grade\":null}]}";
-//
-        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-        jsonList = jsonHandler.getLotItemList();
-        displayLot(jsonHashMap);
-        displayList((jsonList), "warehouse", isDescOrder);
+//        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
+//                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
+//                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
+//                ":\"PARTIAL\"},{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"24\"," +
+//                "\"packing\":\"super sack\",\"weight\":\"52920\",\"warehouse\":\"3\"," +
+//                "\"compartment\":\"A\",\"grade\":null},{\"polymer\":\"PS\",\"form\":\"PEL\"," +
+//                "\"packs\":\"30\",\"packing\":\"super sack\",\"weight\":\"66150\",\"warehouse\":" +
+//                "\"3\",\"compartment\":\"B\",\"grade\":null},{\"polymer\":\"LDPE\",\"form\":" +
+//                "\"PEL\",\"packs\":\"12\",\"packing\":\"super sack\",\"weight\":\"26460\"," +
+//                "\"warehouse\":\"3\",\"compartment\":\"CA\",\"grade\":null},{\"polymer\":\"PP\"," +
+//                "\"form\":\"PEL\",\"packs\":\"22\",\"packing\":\"super sack\",\"weight\":\"48510\"," +
+//                "\"warehouse\":\"3\",\"compartment\":\"CB\",\"grade\":null}]}";
+////
+//        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+//        jsonList = jsonHandler.getLotItemList();
+//        displayLot(jsonHashMap);
+//        displayTotalWeight(jsonHashMap);
+//        displayList((jsonList), "warehouse", isDescOrder);
+//        ///
         List<String> sortArrayList = asList("warehouse", "polymer", "packing");
         loadSpinner(sortArrayList);
         ////////
@@ -160,14 +167,29 @@ public class MainActivity extends AppCompatActivity {
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 
-
     private void displayLot(HashMap<Object, Object> jsonHashMap) {
         if (jsonStr == null) {
             folderView.setText("NO INFO");
-            return;
+        } else {
+            folderView.setText(String.format("%s - %s", jsonHashMap.get("folder").toString(),
+                    jsonHashMap.get("lot").toString()));
         }
-        folderView.setText(String.format("%s - %s", jsonHashMap.get("folder").toString(),
-                jsonHashMap.get("lot").toString()));
+    }
+
+    private void displayTotalWeight(HashMap<Object, Object> jsonHashMap) {
+        if (jsonStr == null) {
+            totalWeightView.setText("");
+        } else if (jsonHashMap.get("lotItems") == null || jsonHashMap.get("lotItems").equals("")) {
+            totalWeightView.setText("Total weight: 0");
+        } else {
+            ArrayList<HashMap<Object, Object>> lotItemArray = (ArrayList<HashMap<Object, Object>>)
+                    jsonHashMap.get("lotItems");
+            int sum = 0;
+            for (int i = 0; i < lotItemArray.size(); i++) {
+                sum += Integer.parseInt((String) lotItemArray.get(i).get("weight"));
+            }
+            totalWeightView.setText("Total: \n\t" + sum + " lbs");
+        }
     }
 
     private void displayList(List<HashMap<Object, Object>> jsonList, String sortKey, boolean isDescOrder) {
