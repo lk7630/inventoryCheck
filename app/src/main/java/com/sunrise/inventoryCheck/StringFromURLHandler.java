@@ -1,8 +1,13 @@
 package com.sunrise.inventoryCheck;
 
+import android.webkit.URLUtil;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static com.sunrise.inventoryCheck.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.ErrorMessage.NullUrl;
 
 public class StringFromURLHandler {
 
@@ -27,11 +32,23 @@ public class StringFromURLHandler {
         this.URLString = URLString;
     }
 
+    public String getURLString() {
+        return URLString;
+    }
+
     public void setBackUpURL(String backUpURL) {
         this.backUpURL = backUpURL;
     }
 
     public String getStringFromURL(String param) {
+        if (URLString == null) {
+            throw new InvalidURL(NullUrl.getErrorMessage());
+        }
+
+        if (!URLUtil.isValidUrl(URLString)) {
+            throw new InvalidURL(InvalidUrl.getErrorMessage());
+        }
+
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
             jsonStr = returnString(URLString + param);
