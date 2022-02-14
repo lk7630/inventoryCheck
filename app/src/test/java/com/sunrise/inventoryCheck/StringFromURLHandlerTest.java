@@ -1,27 +1,25 @@
 package com.sunrise.inventoryCheck;
 
-import android.webkit.URLUtil;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StringFromURLHandlerTest {
 
-    public static final String DEFAULT_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
+    private static final String DEFAULT_URL_STRING = "http://192.168.168.8:10081/plastic/GetLotInfo/";
+    private URL url;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -29,22 +27,25 @@ public class StringFromURLHandlerTest {
     private StringFromURLHandler stringFromURLHandler;
     @Mock
     private HttpHandler httpHandler;
-    private MockedStatic<URLUtil> urlUtilMockedStatic;
+    @Mock
+    private UrlVerifier urlVerifier;
 
     @Before
-    public void setUp() {
+    public void setUp() throws MalformedURLException {
         httpHandler = mock(HttpHandler.class);
+        urlVerifier = mock(UrlVerifier.class);
         stringFromURLHandler = new StringFromURLHandler(httpHandler);
-        stringFromURLHandler.setURLString(DEFAULT_URL);
-        urlUtilMockedStatic = mockStatic(URLUtil.class);
+        stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
+        url = new URL(DEFAULT_URL_STRING);
         when(httpHandler.makeServiceCall()).thenReturn("anyString");
+        when(urlVerifier.isValidUrlString(anyString())).thenReturn(true);
     }
 
     @Test
-    public void getStringFromURL_ParamIsNull() {
-//        stringFromURLHandler.getStringFromURL(null);
-//        URL url = httpHandler.getUrl();
-//        assertEquals(DEFAULT_URL,url.toString());
+    public void getStringFromURL_CallsWithUrlOnlyWhenParamIsNull() {
+        stringFromURLHandler.getStringFromURL(null);
+        verify(httpHandler).setUrlFromString(DEFAULT_URL_STRING);
+
     }
 
     @Test
@@ -59,16 +60,16 @@ public class StringFromURLHandlerTest {
     }
 
     @Test
-    public void getStringFromURL_CallsHttpHandler(){
-        stringFromURLHandler.getStringFromURL("anyParam");
-        verify(httpHandler).setUrlFromString(DEFAULT_URL + "anyParam");
+    public void getStringFromURL_CallsHttpHandler() throws MalformedURLException {
+        stringFromURLHandler.getStringFromURL();
+        assertEquals(url,httpHandler.getUrl());
     }
 
     @Test
-    public void getStringFromURL_CallsHttpHandler_Correctly(){
-        stringFromURLHandler.setURLString("anotherString");
+    public void getStringFromURL_CallsHttpHandler_Correctly() {
+        stringFromURLHandler.setURLString("http://sawaad");
         stringFromURLHandler.getStringFromURL("anyParam");
-        verify(httpHandler).setUrlFromString("anotherString" + "anyParam");
+        verify(httpHandler).setUrlFromString("http://sawaad" + "anyParam");
     }
 
     @Test
@@ -85,7 +86,7 @@ public class StringFromURLHandlerTest {
     }
 
     @Test
-    public void getStringFromURL_ThrowsErrorMessageWhenUrlIsNull(){
+    public void getStringFromURL_ThrowsErrorMessageWhenUrlIsNull() {
         thrown.expect(InvalidURL.class);
         thrown.expectMessage("The API URL is null");
         stringFromURLHandler.setURLString(null);
@@ -93,7 +94,7 @@ public class StringFromURLHandlerTest {
     }
 
     @Test
-    public void getStringFromURL_ThrowsErrorMessageWhenUrlIsInvalid(){
+    public void getStringFromURL_ThrowsErrorMessageWhenUrlIsInvalid() {
         thrown.expect(InvalidURL.class);
         thrown.expectMessage("The API URL is invalid");
         stringFromURLHandler.setURLString("invalidInvalidInvalid");

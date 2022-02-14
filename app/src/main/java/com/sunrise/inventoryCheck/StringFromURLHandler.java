@@ -1,7 +1,7 @@
 package com.sunrise.inventoryCheck;
 
-import android.webkit.URLUtil;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +15,7 @@ public class StringFromURLHandler {
     private String URLString;
     private String backUpURL;
     private HttpHandler httpHandler;
+    private UrlVerifier urlVerifier;
 
     public StringFromURLHandler(HttpHandler httpHandler) {
         this.httpHandler = httpHandler;
@@ -40,20 +41,21 @@ public class StringFromURLHandler {
         this.backUpURL = backUpURL;
     }
 
+    public String getStringFromURL() {
+        return returnJsonString(convertStringToURL(URLString));
+    }
+
     public String getStringFromURL(String param) {
-        if (URLString == null) {
-            throw new InvalidURL(NullUrl.getErrorMessage());
-        }
 
-        if (!URLUtil.isValidUrl(URLString)) {
-            throw new InvalidURL(InvalidUrl.getErrorMessage());
-        }
+        return returnJsonString(convertStringToURL(param));
+    }
 
+    private String returnJsonString(URL fullUrl) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = returnString(URLString + param);
+            jsonStr = returnString(fullUrl);
             jsonStr = backUpURL != null && jsonStr == null ?
-                    returnString(backUpURL + param) : jsonStr;
+                    returnString(fullUrl) : jsonStr;
         });
         executorService.shutdown();
         try {
@@ -66,8 +68,24 @@ public class StringFromURLHandler {
         return jsonStr;
     }
 
-    private String returnString(String string) {
-        httpHandler.setUrlFromString(string);
+    private URL convertStringToURL(String reqURL)  {
+        if (URLString == null) {
+            throw new InvalidURL(NullUrl.getErrorMessage());
+        }
+        urlVerifier = new UrlVerifier();
+        if (!urlVerifier.isValidUrlString(URLString)) {
+            throw new InvalidURL(InvalidUrl.getErrorMessage());
+        }
+        try {
+            return new URL(reqURL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String returnString(URL url) {
+        httpHandler.setUrl(url);
         return httpHandler.makeServiceCall();
     }
 }
