@@ -120,23 +120,23 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
-        //todo - remove
-        ///////
-        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
-                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
-                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
-                ":\"PARTIAL\"},{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"24\"," +
-                "\"packing\":\"super sack\",\"weight\":\"52920\",\"warehouse\":\"3\"," +
-                "\"compartment\":\"A\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":\"PEL\"," +
-                "\"packs\":\"30\",\"packing\":\"super sack\",\"weight\":\"66150\",\"warehouse\":" +
-                "\"3\",\"compartment\":\"B\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":" +
-                "\"PEL\",\"packs\":\"12\",\"packing\":\"super sack\",\"weight\":\"26460\"," +
-                "\"warehouse\":\"3\",\"compartment\":\"CA\",\"grade\":null},{\"polymer\":\"HDPE\"," +
-                "\"form\":\"PEL\",\"packs\":\"22\",\"packing\":\"super sack\",\"weight\":\"48510\"," +
-                "\"warehouse\":\"3\",\"compartment\":\"CB\",\"grade\":null}]}";
-//
-        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-        jsonList = jsonHandler.getLotItemList();
+//        //todo - remove
+//        ///////
+//        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
+//                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
+//                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
+//                ":\"PARTIAL\"},{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"24\"," +
+//                "\"packing\":\"super sack\",\"weight\":\"52920\",\"warehouse\":\"3\"," +
+//                "\"compartment\":\"A\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":\"PEL\"," +
+//                "\"packs\":\"30\",\"packing\":\"super sack\",\"weight\":\"66150\",\"warehouse\":" +
+//                "\"3\",\"compartment\":\"B\",\"grade\":null},{\"polymer\":\"HDPE\",\"form\":" +
+//                "\"PEL\",\"packs\":\"12\",\"packing\":\"super sack\",\"weight\":\"26460\"," +
+//                "\"warehouse\":\"3\",\"compartment\":\"CA\",\"grade\":null},{\"polymer\":\"HDPE\"," +
+//                "\"form\":\"PEL\",\"packs\":\"22\",\"packing\":\"super sack\",\"weight\":\"48510\"," +
+//                "\"warehouse\":\"3\",\"compartment\":\"CB\",\"grade\":null}]}";
+////
+//        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+//        jsonList = jsonHandler.getLotItemList();
         displayLot(jsonHashMap);
         displayList((jsonList), "warehouse", isDescOrder);
         List<String> sortArrayList = asList("warehouse", "polymer", "packing");
@@ -154,8 +154,9 @@ public class MainActivity extends AppCompatActivity {
 
     private String returnStringFromAPI(String bcPanID) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
-        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
-        stringFromURLHandler.setBackUpURL("http://websunrise1:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
+//        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setBackUpURL("http://38.122.193.242:10081/plastic/GetLotInfo/");
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 public class StringFromURLHandlerTest {
 
-    private static final String DEFAULT_URL_STRING = "http://192.168.168.8:10081/plastic/GetLotInfo/";
+    private static final String DEFAULT_URL_STRING = "http://38.122.193.242:10081/plastic/GetLotInfo/";
     private URL url;
 
     @Rule
