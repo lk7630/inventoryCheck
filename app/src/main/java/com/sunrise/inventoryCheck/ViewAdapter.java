@@ -21,7 +21,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
     private List<HashMap<Object, Object>> values;
     ViewHolder holder;
-    int position;
+
 
     public ViewAdapter(List<HashMap<Object, Object>> values) {
         this.values = values;
@@ -63,24 +63,15 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder mholder, int mposition) {
         holder = mholder;
-        position = mposition;
-        String warehouse = getValueFrom("warehouse", position);
-        String polymer = getValueFrom("polymer", position);
-        String form = getValueFrom("form", position);
-        String compartment = getValueFrom("compartment", position);
-        String grade = getValueFrom("grade", position);
-        String packs = getValueFrom("packs", position);
-        String packing = getValueFrom("packing", position);
-        String weight = getValueFrom("weight", position);
+        String warehouse = getValueFrom("warehouse", mposition);
+        String polymer = getValueFrom("polymer", mposition);
+        String form = getValueFrom("form", mposition);
+        String compartment = getValueFrom("compartment", mposition);
+        String grade = getValueFrom("grade", mposition);
+        String packs = getValueFrom("packs", mposition);
+        String packing = getValueFrom("packing", mposition);
+        String weight = getValueFrom("weight", mposition);
 
-//        holder.warehouse.setText(warehouse);
-//        holder.polymer.setText(polymer);
-//        holder.form.setText(form);
-//        holder.compartment.setText("/" + compartment);
-//        holder.grade.setText(grade.equals("PARTIAL") ? "P" : " ");
-//        holder.packs.setText(packs);
-//        holder.packing.setText(packing);
-//        holder.weight.setText(weight + " lbs");
         showText(holder.warehouse, warehouse);
         showText(holder.polymer, polymer);
         showText(holder.form, form);
@@ -89,8 +80,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         showText(holder.packs, packs);
         showText(holder.packing, packing);
         showText(holder.weight, weight);
-
-
     }
 
     @Override

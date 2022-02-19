@@ -8,11 +8,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.sunrise.inventoryCheck.ErrorMessage.InvalidUrl;
-import static com.sunrise.inventoryCheck.ErrorMessage.NonNumericString;
-import static com.sunrise.inventoryCheck.ErrorMessage.NullUrl;
-
-import android.text.TextUtils;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.NonNumericString;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
 
 public class StringFromURLHandler {
 
