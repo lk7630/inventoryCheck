@@ -1,38 +1,73 @@
 package com.sunrise.inventoryCheck;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.sunrise.inventoryCheck.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.ErrorMessage.NonNumericString;
+import static com.sunrise.inventoryCheck.ErrorMessage.NullUrl;
+
+import android.text.TextUtils;
 
 public class StringFromURLHandler {
 
     private String jsonStr;
-    private String URL;
+    private String URLString;
     private String backUpURL;
     private HttpHandler httpHandler;
+    private UrlVerifier urlVerifier;
 
-    public StringFromURLHandler() {
-        this.httpHandler = new HttpHandler();
+    public StringFromURLHandler(HttpHandler httpHandler) {
+        this.httpHandler = httpHandler;
+    }
+
+    public void setHttpHandler(HttpHandler httpHandler) {
+        this.httpHandler = httpHandler;
     }
 
     public String getJsonStr() {
         return jsonStr;
     }
 
-    public void setURL(String URL) {
-        this.URL = URL;
+    public void setURLString(String URLString) {
+        this.URLString = URLString;
+    }
+
+    public String getURLString() {
+        return URLString;
     }
 
     public void setBackUpURL(String backUpURL) {
         this.backUpURL = backUpURL;
     }
 
+    public String getStringFromURL() {
+        return returnJsonString(convertStringToURL(URLString));
+    }
+
     public String getStringFromURL(String param) {
+        if (param == null) {
+            return getStringFromURL();
+        }
+        Pattern pattern = Pattern.compile("^\\d+$");
+        Matcher matcher = pattern.matcher(param);
+        if (!matcher.matches()) {
+            throw new InventoryAppException(NonNumericString.getErrorMessage());
+        }
+        return returnJsonString(convertStringToURL(URLString + param));
+    }
+
+    private String returnJsonString(URL fullUrl) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = returnString(URL + param);
+            jsonStr = returnString(fullUrl);
             jsonStr = backUpURL != null && jsonStr == null ?
-                    returnString(backUpURL + param) : jsonStr;
+                    returnString(fullUrl) : jsonStr;
         });
         executorService.shutdown();
         try {
@@ -45,8 +80,24 @@ public class StringFromURLHandler {
         return jsonStr;
     }
 
-    private String returnString(String string) {
-        httpHandler.setUrlFromString(string);
+    private URL convertStringToURL(String reqURL) {
+        if (URLString == null) {
+            throw new InventoryAppException(NullUrl.getErrorMessage());
+        }
+        urlVerifier = new UrlVerifier();
+        if (!urlVerifier.isValidUrlString(URLString)) {
+            throw new InventoryAppException(InvalidUrl.getErrorMessage());
+        }
+        try {
+            return new URL(reqURL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String returnString(URL url) {
+        httpHandler.setUrl(url);
         return httpHandler.makeServiceCall();
     }
 }

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
-        //todo - remove
-        ///////
+//        //todo - remove
+//        ///////
 //        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
 //                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
 //                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
@@ -161,9 +160,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String returnStringFromAPI(String bcPanID) {
-        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler();
-        stringFromURLHandler.setURL("http://192.168.168.8:10081/plastic/GetLotInfo/");
-        stringFromURLHandler.setBackUpURL("http://websunrise1:10081/plastic/GetLotInfo/");
+        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
+        stringFromURLHandler.setURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
+//        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setBackUpURL("http://38.122.193.242:10081/plastic/GetLotInfo/");
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 
