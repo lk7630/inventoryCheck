@@ -18,7 +18,8 @@ import static org.mockito.Mockito.when;
 
 public class StringFromURLHandlerTest {
 
-    private static final String DEFAULT_URL_STRING = "http://38.122.193.242:10081/plastic/GetLotInfo/";
+    private static final String DEFAULT_URL_STRING = "http://anyURL";
+    public static final String JSON_STRING = "anyString";
     private URL url;
 
     @Rule
@@ -37,20 +38,34 @@ public class StringFromURLHandlerTest {
         stringFromURLHandler = new StringFromURLHandler(httpHandler);
         stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
         url = new URL(DEFAULT_URL_STRING);
-        when(httpHandler.makeServiceCall()).thenReturn("anyString");
+        when(httpHandler.makeServiceCall()).thenReturn(JSON_STRING);
         when(urlVerifier.isValidUrlString(anyString())).thenReturn(true);
     }
 
     @Test
-    public void getStringFromURL_CallsWithUrlOnlyWhenParamIsNull() {
-        stringFromURLHandler.getStringFromURL(null);
-        verify(httpHandler).setUrlFromString(DEFAULT_URL_STRING);
-
+    public void getStringFromURL_ReturnsStringWhenNoParam(){
+        String result=stringFromURLHandler.getStringFromURL();
+        assertEquals(JSON_STRING,result);
     }
 
     @Test
-    public void getStringFromURL_ParamIsNonString() {
+    public void getStringFromURL_ReturnsStringWhenNoParam_Correctly(){
+        when(httpHandler.makeServiceCall()).thenReturn("anotherString");
+        String result=stringFromURLHandler.getStringFromURL();
+        assertEquals("anotherString",result);
+    }
 
+    @Test
+    public void getStringFromURL_CallsWithUrlOnlyWhenParamIsNull() throws MalformedURLException {
+        stringFromURLHandler.getStringFromURL(null);
+        verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING));
+    }
+
+    @Test
+    public void getStringFromURL_ThrowExceptionWhenParamIsNonNumeric() {
+        thrown.expect(InventoryAppException.class);
+        thrown.expectMessage("The string is non-numeric. Please make sure all are numbers");
+        stringFromURLHandler.getStringFromURL("123as23acs");
     }
 
     @Test
@@ -60,26 +75,39 @@ public class StringFromURLHandlerTest {
     }
 
     @Test
-    public void getStringFromURL_CallsHttpHandler() throws MalformedURLException {
+    public void getStringFromURL_ReturnsWhatHttpHandlerReturns() {
+        String result = stringFromURLHandler.getStringFromURL();
+        assertEquals(JSON_STRING, result);
+    }
+
+    @Test
+    public void getStringFromURL_ReturnsWhatHttpHandlerReturns_Correctly() {
+        when(httpHandler.makeServiceCall()).thenReturn("anotherString");
+        String result = stringFromURLHandler.getStringFromURL();
+        assertEquals("anotherString", result);
+    }
+
+    @Test
+    public void getStringFromURL_CallsHttpHandler() {
         stringFromURLHandler.getStringFromURL();
-        assertEquals(url,httpHandler.getUrl());
+        verify(httpHandler).setUrl(url);
     }
 
     @Test
-    public void getStringFromURL_CallsHttpHandler_Correctly() {
-        stringFromURLHandler.setURLString("http://sawaad");
-        stringFromURLHandler.getStringFromURL("anyParam");
-        verify(httpHandler).setUrlFromString("http://sawaad" + "anyParam");
+    public void getStringFromURL_CallsHttpHandler_Correctly() throws MalformedURLException {
+        stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
+        stringFromURLHandler.getStringFromURL("12345");
+        verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING + "12345"));
     }
 
     @Test
-    public void getStringFromURL_ReturnString() {
+    public void getStringFromURL_ReturnsStringWhenParamIsNull() {
         String result = stringFromURLHandler.getStringFromURL(null);
-        assertEquals("anyString", result);
+        assertEquals(JSON_STRING, result);
     }
 
     @Test
-    public void getStringFromURL_ReturnString_Correctly() {
+    public void getStringFromURL_ReturnsString_Correctly() {
         when(httpHandler.makeServiceCall()).thenReturn("anotherString");
         String result = stringFromURLHandler.getStringFromURL(null);
         assertEquals("anotherString", result);
@@ -87,17 +115,17 @@ public class StringFromURLHandlerTest {
 
     @Test
     public void getStringFromURL_ThrowsErrorMessageWhenUrlIsNull() {
-        thrown.expect(InvalidURL.class);
+        thrown.expect(InventoryAppException.class);
         thrown.expectMessage("The API URL is null");
         stringFromURLHandler.setURLString(null);
-        stringFromURLHandler.getStringFromURL("any");
+        stringFromURLHandler.getStringFromURL(null);
     }
 
     @Test
     public void getStringFromURL_ThrowsErrorMessageWhenUrlIsInvalid() {
-        thrown.expect(InvalidURL.class);
+        thrown.expect(InventoryAppException.class);
         thrown.expectMessage("The API URL is invalid");
         stringFromURLHandler.setURLString("invalidInvalidInvalid");
-        stringFromURLHandler.getStringFromURL("any");
+        stringFromURLHandler.getStringFromURL("12445");
     }
 }

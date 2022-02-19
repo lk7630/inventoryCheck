@@ -5,9 +5,14 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.sunrise.inventoryCheck.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.ErrorMessage.NonNumericString;
 import static com.sunrise.inventoryCheck.ErrorMessage.NullUrl;
+
+import android.text.TextUtils;
 
 public class StringFromURLHandler {
 
@@ -46,8 +51,15 @@ public class StringFromURLHandler {
     }
 
     public String getStringFromURL(String param) {
-
-        return returnJsonString(convertStringToURL(param));
+        if (param == null) {
+            return getStringFromURL();
+        }
+        Pattern pattern = Pattern.compile("^\\d+$");
+        Matcher matcher = pattern.matcher(param);
+        if (!matcher.matches()) {
+            throw new InventoryAppException(NonNumericString.getErrorMessage());
+        }
+        return returnJsonString(convertStringToURL(URLString + param));
     }
 
     private String returnJsonString(URL fullUrl) {
@@ -68,13 +80,13 @@ public class StringFromURLHandler {
         return jsonStr;
     }
 
-    private URL convertStringToURL(String reqURL)  {
+    private URL convertStringToURL(String reqURL) {
         if (URLString == null) {
-            throw new InvalidURL(NullUrl.getErrorMessage());
+            throw new InventoryAppException(NullUrl.getErrorMessage());
         }
         urlVerifier = new UrlVerifier();
         if (!urlVerifier.isValidUrlString(URLString)) {
-            throw new InvalidURL(InvalidUrl.getErrorMessage());
+            throw new InventoryAppException(InvalidUrl.getErrorMessage());
         }
         try {
             return new URL(reqURL);
