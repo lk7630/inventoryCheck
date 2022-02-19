@@ -1,4 +1,4 @@
-package com.sunrise.inventoryCheck;
+package com.sunrise.inventoryCheck.enums;
 
 public enum ErrorMessage {
 

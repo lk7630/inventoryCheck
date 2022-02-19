@@ -2,8 +2,8 @@ package com.sunrise.inventoryCheck;
 
 import org.junit.Test;
 
-import static com.sunrise.inventoryCheck.ErrorMessage.InvalidUrl;
-import static com.sunrise.inventoryCheck.ErrorMessage.NullUrl;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
 import static org.junit.Assert.*;
 
 public class ErrorMessageTest {
