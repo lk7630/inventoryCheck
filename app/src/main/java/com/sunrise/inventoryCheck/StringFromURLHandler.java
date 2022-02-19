@@ -16,7 +16,7 @@ public class StringFromURLHandler {
 
     private String jsonStr;
     private String URLString;
-    private String backUpURL;
+    private String backUpURLString;
     private HttpHandler httpHandler;
     private UrlVerifier urlVerifier;
 
@@ -40,12 +40,12 @@ public class StringFromURLHandler {
         return URLString;
     }
 
-    public void setBackUpURL(String backUpURL) {
-        this.backUpURL = backUpURL;
+    public void setBackUpURLString(String backUpURLString) {
+        this.backUpURLString = backUpURLString;
     }
 
     public String getStringFromURL() {
-        return returnJsonString(convertStringToURL(URLString));
+        return returnJsonString(null);
     }
 
     public String getStringFromURL(String param) {
@@ -57,15 +57,19 @@ public class StringFromURLHandler {
         if (!matcher.matches()) {
             throw new InventoryAppException(NonNumericString.getErrorMessage());
         }
-        return returnJsonString(convertStringToURL(URLString + param));
+        return returnJsonString(param);
     }
 
-    private String returnJsonString(URL fullUrl) {
+    private String returnJsonString(String param) {
+        URL url = param == null ? convertStringToURL(URLString)
+                : convertStringToURL(URLString + param);
+        URL backupUrl = param == null ? convertStringToURL(backUpURLString)
+                : convertStringToURL(backUpURLString + param);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
-            jsonStr = returnString(fullUrl);
-            jsonStr = backUpURL != null && jsonStr == null ?
-                    returnString(fullUrl) : jsonStr;
+            jsonStr = returnString(url);
+            jsonStr = backUpURLString != null && jsonStr == null ?
+                    returnString(backupUrl) : jsonStr;
         });
         executorService.shutdown();
         try {

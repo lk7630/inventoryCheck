@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
         stringFromURLHandler.setURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
 //        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
-        stringFromURLHandler.setBackUpURL("http://38.122.193.242:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setBackUpURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 

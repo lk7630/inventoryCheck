@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 public class StringFromURLHandlerTest {
 
     private static final String DEFAULT_URL_STRING = "http://anyURL";
+    private static final String DEFAULT_BACKUP_URL_STRING = "http://anyBackUpURL";
     public static final String JSON_STRING = "anyString";
     private URL url;
 
@@ -37,22 +38,23 @@ public class StringFromURLHandlerTest {
         urlVerifier = mock(UrlVerifier.class);
         stringFromURLHandler = new StringFromURLHandler(httpHandler);
         stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
+        stringFromURLHandler.setBackUpURLString(DEFAULT_BACKUP_URL_STRING);
         url = new URL(DEFAULT_URL_STRING);
         when(httpHandler.makeServiceCall()).thenReturn(JSON_STRING);
         when(urlVerifier.isValidUrlString(anyString())).thenReturn(true);
     }
 
     @Test
-    public void getStringFromURL_ReturnsStringWhenNoParam(){
-        String result=stringFromURLHandler.getStringFromURL();
-        assertEquals(JSON_STRING,result);
+    public void getStringFromURL_ReturnsStringWhenNoParam() {
+        String result = stringFromURLHandler.getStringFromURL();
+        assertEquals(JSON_STRING, result);
     }
 
     @Test
-    public void getStringFromURL_ReturnsStringWhenNoParam_Correctly(){
+    public void getStringFromURL_ReturnsStringWhenNoParam_Correctly() {
         when(httpHandler.makeServiceCall()).thenReturn("anotherString");
-        String result=stringFromURLHandler.getStringFromURL();
-        assertEquals("anotherString",result);
+        String result = stringFromURLHandler.getStringFromURL();
+        assertEquals("anotherString", result);
     }
 
     @Test
@@ -127,5 +129,12 @@ public class StringFromURLHandlerTest {
         thrown.expectMessage("The API URL is invalid");
         stringFromURLHandler.setURLString("invalidInvalidInvalid");
         stringFromURLHandler.getStringFromURL("12445");
+    }
+
+    @Test
+    public void getStringFromURL_UsesBackupURLWhenURLReturnsNullString() throws MalformedURLException {
+        when(httpHandler.makeServiceCall()).thenReturn(null);
+        stringFromURLHandler.getStringFromURL();
+        verify(httpHandler).setUrl(new URL(DEFAULT_BACKUP_URL_STRING));
     }
 }
