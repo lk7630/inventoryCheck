@@ -65,11 +65,19 @@ public class StringFromURLHandler {
                 : convertStringToURL(URLString + param);
         URL backupUrl = param == null ? convertStringToURL(backUpURLString)
                 : convertStringToURL(backUpURLString + param);
+        jsonStr = returnString(url);
+        if (jsonStr == null) {
+            jsonStr = returnString(backupUrl);
+        }
+        return jsonStr;
+    }
+
+    private String returnString(URL url) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final String[] result = new String[1];
         executorService.execute(() -> {
-            jsonStr = returnString(url);
-            jsonStr = backUpURLString != null && jsonStr == null ?
-                    returnString(backupUrl) : jsonStr;
+            httpHandler.setUrl(url);
+            result[0] = httpHandler.makeServiceCall();
         });
         executorService.shutdown();
         try {
@@ -79,7 +87,7 @@ public class StringFromURLHandler {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return jsonStr;
+        return result[0];
     }
 
     private URL convertStringToURL(String reqURL) {
@@ -96,10 +104,5 @@ public class StringFromURLHandler {
             e.printStackTrace();
             return null;
         }
-    }
-
-    private String returnString(URL url) {
-        httpHandler.setUrl(url);
-        return httpHandler.makeServiceCall();
     }
 }

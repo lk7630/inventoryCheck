@@ -32,6 +32,8 @@ import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
 import static java.util.Arrays.asList;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String WEB_API_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
+    public static final String LOCAL_API_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
     private String jsonStr;
     private HashMap<Object, Object> jsonHashMap;
     private final JsonHandler jsonHandler = new JsonHandler();
@@ -162,9 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String returnStringFromAPI(String bcPanID) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
-        stringFromURLHandler.setURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
-//        stringFromURLHandler.setURLString("http://192.168.168.8:10081/plastic/GetLotInfo/");
-        stringFromURLHandler.setBackUpURLString("http://38.122.193.242:10081/plastic/GetLotInfo/");
+        stringFromURLHandler.setURLString(LOCAL_API_URL);
+        stringFromURLHandler.setBackUpURLString(WEB_API_URL);
         return stringFromURLHandler.getStringFromURL(bcPanID);
     }
 
