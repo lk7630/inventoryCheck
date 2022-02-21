@@ -33,17 +33,24 @@ public class HttpHandler {
     }
 
     public String makeServiceCall() {
-        String response = null;
+        final String[] response = {null};
+        Thread thread= new Thread(() -> {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                InputStream in = new BufferedInputStream(conn.getInputStream());
+                response[0] = convertStreamToString(in);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
         try {
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            response = convertStreamToString(in);
-        } catch (Exception e) {
+            thread.join(2000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return response;
+        return response[0];
     }
 
     private String convertStreamToString(InputStream is) {

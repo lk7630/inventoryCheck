@@ -1,16 +1,13 @@
 package com.sunrise.inventoryCheck;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static com.sunrise.inventoryCheck.enums.ErrorMessage.InvalidUrl;
 import static com.sunrise.inventoryCheck.enums.ErrorMessage.NonNumericString;
 import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringFromURLHandler {
 
@@ -61,33 +58,27 @@ public class StringFromURLHandler {
     }
 
     private String returnJsonString(String param) {
+        int timesToTry = 2;
         URL url = param == null ? convertStringToURL(URLString)
                 : convertStringToURL(URLString + param);
         URL backupUrl = param == null ? convertStringToURL(backUpURLString)
                 : convertStringToURL(backUpURLString + param);
-        jsonStr = returnString(url);
-        if (jsonStr == null) {
-            jsonStr = returnString(backupUrl);
+        while (timesToTry > 0) {
+            timesToTry -= 1;
+            jsonStr = returnString(url);
+            if (jsonStr == null) {
+                jsonStr = returnString(backupUrl);
+            }
+            if (jsonStr != null) {
+                return jsonStr;
+            }
         }
-        return jsonStr;
+        return null;
     }
 
     private String returnString(URL url) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        final String[] result = new String[1];
-        executorService.execute(() -> {
-            httpHandler.setUrl(url);
-            result[0] = httpHandler.makeServiceCall();
-        });
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(3, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return result[0];
+        httpHandler.setUrl(url);
+        return httpHandler.makeServiceCall();
     }
 
     private URL convertStringToURL(String reqURL) {

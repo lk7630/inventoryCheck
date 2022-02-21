@@ -13,6 +13,7 @@ import java.net.URL;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -135,6 +136,6 @@ public class StringFromURLHandlerTest {
     public void getStringFromURL_UsesBackupURLWhenURLReturnsNullString() throws MalformedURLException {
         when(httpHandler.makeServiceCall()).thenReturn(null);
         stringFromURLHandler.getStringFromURL();
-        verify(httpHandler).setUrl(new URL(DEFAULT_BACKUP_URL_STRING));
+        verify(httpHandler,times(2)).setUrl(new URL(DEFAULT_BACKUP_URL_STRING));
     }
 }
