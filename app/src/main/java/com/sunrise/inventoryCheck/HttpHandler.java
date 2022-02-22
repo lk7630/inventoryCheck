@@ -8,6 +8,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
@@ -33,24 +40,24 @@ public class HttpHandler {
     }
 
     public String makeServiceCall() {
-        final String[] response = {null};
-        Thread thread= new Thread(() -> {
+        CompletableFuture<String> completableFuture= CompletableFuture.supplyAsync((Supplier<String>) () -> {
             try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn;
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 InputStream in = new BufferedInputStream(conn.getInputStream());
-                response[0] = convertStreamToString(in);
-            } catch (Exception e) {
+                return convertStreamToString(in);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
         });
-        thread.start();
         try {
-            thread.join(2000);
-        } catch (InterruptedException e) {
+            return completableFuture.get(2000, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
             e.printStackTrace();
         }
-        return response[0];
+        return null;
     }
 
     private String convertStreamToString(InputStream is) {
