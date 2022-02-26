@@ -58,7 +58,7 @@ public class StringFromURLHandler {
     }
 
     private String returnJsonString(String param) {
-        int timesToTry = 2;
+        int timesToTry = 1;
         URL url = param == null ? convertStringToURL(URLString)
                 : convertStringToURL(URLString + param);
         URL backupUrl = param == null ? convertStringToURL(backUpURLString)
