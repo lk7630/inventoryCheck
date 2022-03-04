@@ -8,12 +8,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Executor;
 
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
     private URL url;
+    private final Executor executor;
 
-    public HttpHandler() {
+    public HttpHandler(Executor executor) {
+        this.executor = executor;
     }
 
     public void setUrl(URL url) {
@@ -33,6 +36,12 @@ public class HttpHandler {
     }
 
     public String makeServiceCall() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
         final String[] response = {null};
         Thread thread= new Thread(() -> {
             try {

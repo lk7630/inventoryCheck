@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String returnStringFromAPI(String bcPanID) {
-        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler());
+        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(executor));
         stringFromURLHandler.setURLString(LOCAL_API_URL);
         stringFromURLHandler.setBackUpURLString(WEB_API_URL);
         return stringFromURLHandler.getStringFromURL(bcPanID);
