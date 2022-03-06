@@ -3,11 +3,14 @@ package com.sunrise.inventoryCheck;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -21,11 +24,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import static android.graphics.Color.GRAY;
 import static android.graphics.Color.RED;
 import static android.graphics.Color.rgb;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
@@ -48,12 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView dscText;
     private boolean isDescOrder;
     private String sortKey;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button scanButton = (Button) findViewById(R.id.scanButton);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         bcPanIDTextView = (TextView) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         folderView = (TextView) findViewById(R.id.folderView);
@@ -79,12 +87,8 @@ public class MainActivity extends AppCompatActivity {
                             bcPanIDTextView.setText("wrong barcode !");
                         } else {
                             bcPanIDTextView.setText(resultText);
-                            jsonStr = returnStringFromAPI(resultText);
-                            jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-                            jsonList = jsonHandler.getLotItemList();
-                            displayLot(jsonHashMap);
-                            displayTotalWeight(jsonHashMap);
-                            displayList((jsonList), "warehouse", isDescOrder);
+                            progressBar.setVisibility(VISIBLE);
+                            returnStringFromAPI(resultText);
                         }
                     }
                 });
@@ -162,11 +166,34 @@ public class MainActivity extends AppCompatActivity {
                 : "wrong barcode!";
     }
 
-    private String returnStringFromAPI(String bcPanID) {
-        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(executor));
+    private void returnStringFromAPI(String bcPanID) {
+        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),Executors.newSingleThreadExecutor());
         stringFromURLHandler.setURLString(LOCAL_API_URL);
         stringFromURLHandler.setBackUpURLString(WEB_API_URL);
-        return stringFromURLHandler.getStringFromURL(bcPanID);
+        stringFromURLHandler.getStringFromURL(bcPanID, new RepositoryCallBack() {
+            @Override
+            public void onComplete(String result) {
+                Log.e("from callBack", result);
+                jsonStr = result;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLotInfo();
+                    }
+                });
+            }
+        });
+
+        Log.e("afafa", "addadad");
+    }
+
+    private void updateLotInfo() {
+        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
+        jsonList = jsonHandler.getLotItemList();
+        displayLot(jsonHashMap);
+        displayTotalWeight(jsonHashMap);
+        displayList((jsonList), "warehouse", isDescOrder);
+        progressBar.setVisibility(GONE);
     }
 
     private void displayLot(HashMap<Object, Object> jsonHashMap) {

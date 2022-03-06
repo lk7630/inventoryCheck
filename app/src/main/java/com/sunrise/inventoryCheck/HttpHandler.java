@@ -13,11 +13,6 @@ import java.util.concurrent.Executor;
 public class HttpHandler {
     private static final String TAG = HttpHandler.class.getSimpleName();
     private URL url;
-    private final Executor executor;
-
-    public HttpHandler(Executor executor) {
-        this.executor = executor;
-    }
 
     public void setUrl(URL url) {
             this.url = url;
@@ -36,30 +31,16 @@ public class HttpHandler {
     }
 
     public String makeServiceCall() {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-        final String[] response = {null};
-        Thread thread= new Thread(() -> {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                InputStream in = new BufferedInputStream(conn.getInputStream());
-                response[0] = convertStreamToString(in);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        try {
-            thread.join(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return response[0];
+                try {
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(4000);
+                    InputStream in = new BufferedInputStream(conn.getInputStream());
+                    return convertStreamToString(in);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
     }
 
     private String convertStreamToString(InputStream is) {

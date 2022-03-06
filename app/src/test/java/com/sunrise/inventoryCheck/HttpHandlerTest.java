@@ -28,7 +28,7 @@ public class HttpHandlerTest {
 
     @Before
     public void setUp() throws IOException {
-        httpHandler = new HttpHandler(executor);
+        httpHandler = new HttpHandler();
         url = mock(URL.class);
         conn = mock(HttpURLConnection.class);
         inputStream = new ByteArrayInputStream("anyString".getBytes());

@@ -6,6 +6,7 @@ import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,9 +17,12 @@ public class StringFromURLHandler {
     private String backUpURLString;
     private HttpHandler httpHandler;
     private UrlVerifier urlVerifier;
+    private String returnedString;
+    private Executor executor;
 
-    public StringFromURLHandler(HttpHandler httpHandler) {
+    public StringFromURLHandler(HttpHandler httpHandler, Executor executor) {
         this.httpHandler = httpHandler;
+        this.executor = executor;
     }
 
     public void setHttpHandler(HttpHandler httpHandler) {
@@ -41,39 +45,42 @@ public class StringFromURLHandler {
         this.backUpURLString = backUpURLString;
     }
 
-    public String getStringFromURL() {
-        return returnJsonString(null);
+    public void getStringFromURL(RepositoryCallBack callBack) {
+        returnJsonString(null, callBack/*todo*/);
     }
 
-    public String getStringFromURL(String param) {
+    public void getStringFromURL(String param, RepositoryCallBack callBack) {
         if (param == null) {
-            return getStringFromURL();
+            getStringFromURL(callBack/*todo*/);
         }
         Pattern pattern = Pattern.compile("^\\d+$");
         Matcher matcher = pattern.matcher(param);
         if (!matcher.matches()) {
             throw new InventoryAppException(NonNumericString.getErrorMessage());
         }
-        return returnJsonString(param);
+        returnJsonString(param, callBack/*todo*/);
     }
 
-    private String returnJsonString(String param) {
-        int timesToTry = 2;
+    private void returnJsonString(String param, RepositoryCallBack callBack) {
+
         URL url = param == null ? convertStringToURL(URLString)
                 : convertStringToURL(URLString + param);
         URL backupUrl = param == null ? convertStringToURL(backUpURLString)
                 : convertStringToURL(backUpURLString + param);
-        while (timesToTry > 0) {
-            timesToTry -= 1;
-            jsonStr = returnString(url);
-            if (jsonStr == null) {
-                jsonStr = returnString(backupUrl);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                int timesToTry = 1;
+                while (timesToTry > 0) {
+                    timesToTry -= 1;
+                    jsonStr = returnString(url);
+                    if (jsonStr == null) {
+                        jsonStr = returnString(backupUrl);
+                    }
+                }
+                callBack.onComplete(jsonStr);
             }
-            if (jsonStr != null) {
-                return jsonStr;
-            }
-        }
-        return null;
+        });
     }
 
     private String returnString(URL url) {

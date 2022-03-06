@@ -37,7 +37,7 @@ public class StringFromURLHandlerTest {
     public void setUp() throws MalformedURLException {
         httpHandler = mock(HttpHandler.class);
         urlVerifier = mock(UrlVerifier.class);
-        stringFromURLHandler = new StringFromURLHandler(httpHandler);
+        stringFromURLHandler = new StringFromURLHandler(httpHandler, executor);
         stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
         stringFromURLHandler.setBackUpURLString(DEFAULT_BACKUP_URL_STRING);
         url = new URL(DEFAULT_URL_STRING);
@@ -47,20 +47,20 @@ public class StringFromURLHandlerTest {
 
     @Test
     public void getStringFromURL_ReturnsStringWhenNoParam() {
-        String result = stringFromURLHandler.getStringFromURL();
+        String result = stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         assertEquals(JSON_STRING, result);
     }
 
     @Test
     public void getStringFromURL_ReturnsStringWhenNoParam_Correctly() {
         when(httpHandler.makeServiceCall()).thenReturn("anotherString");
-        String result = stringFromURLHandler.getStringFromURL();
+        String result = stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         assertEquals("anotherString", result);
     }
 
     @Test
     public void getStringFromURL_CallsWithUrlOnlyWhenParamIsNull() throws MalformedURLException {
-        stringFromURLHandler.getStringFromURL(null);
+        stringFromURLHandler.getStringFromURL(null, /*todo*/);
         verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING));
     }
 
@@ -68,51 +68,51 @@ public class StringFromURLHandlerTest {
     public void getStringFromURL_ThrowExceptionWhenParamIsNonNumeric() {
         thrown.expect(InventoryAppException.class);
         thrown.expectMessage("The string is non-numeric. Please make sure all are numbers");
-        stringFromURLHandler.getStringFromURL("123as23acs");
+        stringFromURLHandler.getStringFromURL("123as23acs", /*todo*/);
     }
 
     @Test
     public void getStringFromURL_CallsHttpHandler_MakeServiceCall() {
-        stringFromURLHandler.getStringFromURL(null);
+        stringFromURLHandler.getStringFromURL(null, /*todo*/);
         verify(httpHandler).makeServiceCall();
     }
 
     @Test
     public void getStringFromURL_ReturnsWhatHttpHandlerReturns() {
-        String result = stringFromURLHandler.getStringFromURL();
+        String result = stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         assertEquals(JSON_STRING, result);
     }
 
     @Test
     public void getStringFromURL_ReturnsWhatHttpHandlerReturns_Correctly() {
         when(httpHandler.makeServiceCall()).thenReturn("anotherString");
-        String result = stringFromURLHandler.getStringFromURL();
+        String result = stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         assertEquals("anotherString", result);
     }
 
     @Test
     public void getStringFromURL_CallsHttpHandler() {
-        stringFromURLHandler.getStringFromURL();
+        stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         verify(httpHandler).setUrl(url);
     }
 
     @Test
     public void getStringFromURL_CallsHttpHandler_Correctly() throws MalformedURLException {
         stringFromURLHandler.setURLString(DEFAULT_URL_STRING);
-        stringFromURLHandler.getStringFromURL("12345");
+        stringFromURLHandler.getStringFromURL("12345", /*todo*/);
         verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING + "12345"));
     }
 
     @Test
     public void getStringFromURL_ReturnsStringWhenParamIsNull() {
-        String result = stringFromURLHandler.getStringFromURL(null);
+        String result = stringFromURLHandler.getStringFromURL(null, /*todo*/);
         assertEquals(JSON_STRING, result);
     }
 
     @Test
     public void getStringFromURL_ReturnsString_Correctly() {
         when(httpHandler.makeServiceCall()).thenReturn("anotherString");
-        String result = stringFromURLHandler.getStringFromURL(null);
+        String result = stringFromURLHandler.getStringFromURL(null, /*todo*/);
         assertEquals("anotherString", result);
     }
 
@@ -121,7 +121,7 @@ public class StringFromURLHandlerTest {
         thrown.expect(InventoryAppException.class);
         thrown.expectMessage("The API URL is null");
         stringFromURLHandler.setURLString(null);
-        stringFromURLHandler.getStringFromURL(null);
+        stringFromURLHandler.getStringFromURL(null, /*todo*/);
     }
 
     @Test
@@ -129,13 +129,13 @@ public class StringFromURLHandlerTest {
         thrown.expect(InventoryAppException.class);
         thrown.expectMessage("The API URL is invalid");
         stringFromURLHandler.setURLString("invalidInvalidInvalid");
-        stringFromURLHandler.getStringFromURL("12445");
+        stringFromURLHandler.getStringFromURL("12445", /*todo*/);
     }
 
     @Test
     public void getStringFromURL_UsesBackupURLWhenURLReturnsNullString() throws MalformedURLException {
         when(httpHandler.makeServiceCall()).thenReturn(null);
-        stringFromURLHandler.getStringFromURL();
+        stringFromURLHandler.getStringFromURL(callBack/*todo*/);
         verify(httpHandler,times(2)).setUrl(new URL(DEFAULT_BACKUP_URL_STRING));
     }
 }
