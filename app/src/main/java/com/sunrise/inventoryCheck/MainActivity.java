@@ -1,5 +1,15 @@
 package com.sunrise.inventoryCheck;
 
+import static android.graphics.Color.GRAY;
+import static android.graphics.Color.RED;
+import static android.graphics.Color.rgb;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static java.util.Arrays.asList;
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -26,16 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
-
-import static android.graphics.Color.GRAY;
-import static android.graphics.Color.RED;
-import static android.graphics.Color.rgb;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static androidx.recyclerview.widget.RecyclerView.Adapter;
-import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
-import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
-import static java.util.Arrays.asList;
 
 public class MainActivity extends AppCompatActivity {
     public static final String WEB_API_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
@@ -132,30 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
-//        //todo - remove
-//        ///////
-//        jsonStr = "{\"panID\":\"179310\",\"folder\":\"PLANT\",\"lot\":\"2210713\",\"lotItems\"" +
-//                ":[{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"1\",\"packing\":\"bulk\"," +
-//                "\"weight\":\"800\",\"warehouse\":\"3\",\"compartment\":\"A\",\"grade\"" +
-//                ":\"PARTIAL\"},{\"polymer\":\"HDPE\",\"form\":\"PEL\",\"packs\":\"24\"," +
-//                "\"packing\":\"super sack\",\"weight\":\"52920\",\"warehouse\":\"3\"," +
-//                "\"compartment\":\"A\",\"grade\":null},{\"polymer\":\"PS\",\"form\":\"PEL\"," +
-//                "\"packs\":\"30\",\"packing\":\"super sack\",\"weight\":\"66150\",\"warehouse\":" +
-//                "\"3\",\"compartment\":\"B\",\"grade\":null},{\"polymer\":\"LDPE\",\"form\":" +
-//                "\"PEL\",\"packs\":\"12\",\"packing\":\"super sack\",\"weight\":\"26460\"," +
-//                "\"warehouse\":\"3\",\"compartment\":\"CA\",\"grade\":null},{\"polymer\":\"PP\"," +
-//                "\"form\":\"PEL\",\"packs\":\"22\",\"packing\":\"super sack\",\"weight\":\"48510\"," +
-//                "\"warehouse\":\"3\",\"compartment\":\"CB\",\"grade\":null}]}";
-////
-//        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-//        jsonList = jsonHandler.getLotItemList();
-//        displayLot(jsonHashMap);
-//        displayTotalWeight(jsonHashMap);
-//        displayList((jsonList), "warehouse", isDescOrder);
-//        ///
         List<String> sortArrayList = asList("warehouse", "polymer", "packing");
         loadSpinner(sortArrayList);
-        ////////
     }
 
     private String processBarcode(String barcode) {
@@ -167,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void returnStringFromAPI(String bcPanID) {
-        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),Executors.newSingleThreadExecutor());
+        StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),
+                Executors.newSingleThreadExecutor());
         stringFromURLHandler.setURLString(LOCAL_API_URL);
         stringFromURLHandler.setBackUpURLString(WEB_API_URL);
         stringFromURLHandler.getStringFromURL(bcPanID, new RepositoryCallBack() {
@@ -233,9 +212,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSpinner(List<String> sortArrayList) {
-//        if (jsonStr == null) {
-//            sortArrayList = new ArrayList<>();
-//        }
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
                 R.layout.support_simple_spinner_dropdown_item, sortArrayList);
         sortSpinner.setAdapter(spinnerAdapter);
