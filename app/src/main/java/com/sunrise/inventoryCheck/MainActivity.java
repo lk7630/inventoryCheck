@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         ascText = (TextView) findViewById(R.id.ascText);
         dscText = (TextView) findViewById(R.id.dscText);
         isDescOrder = false;
+        layoutManager = new GridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(layoutManager);
 
         //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         stringFromURLHandler.getStringFromURL(bcPanID, new RepositoryCallBack() {
             @Override
             public void onComplete(String result) {
-                Log.e("from callBack", result);
+//                Log.e("from callBack", result);
                 jsonStr = result;
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -203,8 +205,6 @@ public class MainActivity extends AppCompatActivity {
     private void displayList(List<HashMap<Object, Object>> jsonList, String sortKey, boolean isDescOrder) {
         if (jsonStr != null) {
             Collections.sort(jsonList, new CustomArraySort(sortKey, isDescOrder));
-            layoutManager = new GridLayoutManager(this, 1);
-            recyclerView.setLayoutManager(layoutManager);
             Adapter listAdapter = new ViewAdapter(jsonList);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setHasFixedSize(true);

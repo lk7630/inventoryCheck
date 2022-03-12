@@ -1,5 +1,7 @@
 package com.sunrise.inventoryCheck;
 
+import android.util.Log;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.concurrent.Executor;
 
@@ -34,13 +38,16 @@ public class HttpHandler {
                 try {
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(4000);
+                    conn.setConnectTimeout(2000);
+                    Log.e("response: ",conn.getResponseMessage());
                     InputStream in = new BufferedInputStream(conn.getInputStream());
                     return convertStreamToString(in);
-                } catch (Exception e) {
+                } catch (SocketTimeoutException exception){
+                    Log.e("Error: ","Connection timeout after 2s");
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return null;
+        return null;
     }
 
     private String convertStreamToString(InputStream is) {
