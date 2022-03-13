@@ -1,5 +1,9 @@
 package com.sunrise.inventoryCheck;
 
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ConnectionTimeout;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadFailure;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -19,6 +23,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.sunrise.inventoryCheck.enums.CustomResponse;
 
 public class StringFromURLHandlerTest {
 
@@ -47,7 +53,8 @@ public class StringFromURLHandlerTest {
         stringFromURLHandler.setBackUpURLString(DEFAULT_BACKUP_URL_STRING);
         url = new URL(DEFAULT_URL_STRING);
         callBack = mock(RepositoryCallBack.class);
-        when(httpHandler.makeServiceCall()).thenReturn(JSON_STRING);
+        when(httpHandler.makeServiceCall()).thenReturn(ReadSuccess);
+        when(httpHandler.getDownloadContent()).thenReturn(JSON_STRING);
     }
 
     @Test
@@ -55,11 +62,6 @@ public class StringFromURLHandlerTest {
         stringFromURLHandler.getStringFromURL(null, callBack);
         waitToShutDownExecutorService();
         verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING));
-    }
-
-    private void waitToShutDownExecutorService() throws InterruptedException {
-        executorService.shutdown();
-        executorService.awaitTermination(10, TimeUnit.SECONDS);
     }
 
     @Test
@@ -112,10 +114,33 @@ public class StringFromURLHandlerTest {
 
     @Test
     public void getStringFromURL_UsesBackupURLWhenURLReturnsNullString() throws MalformedURLException, InterruptedException {
-        when(httpHandler.makeServiceCall()).thenReturn(null);
+        when(httpHandler.getDownloadContent()).thenReturn(null);
         stringFromURLHandler.getStringFromURL(callBack);
         waitToShutDownExecutorService();
         verify(httpHandler).setUrl(new URL(DEFAULT_URL_STRING));
         verify(httpHandler).setUrl(new URL(DEFAULT_BACKUP_URL_STRING));
+    }
+
+    @Test
+    public void getStringFromURL_ReturnsEmptyStringWhenCustomResponseIsNotSuccess()
+            throws InterruptedException {
+        when(httpHandler.makeServiceCall()).thenReturn(ReadFailure);
+        stringFromURLHandler.getStringFromURL(callBack);
+        waitToShutDownExecutorService();
+        assertEquals("",stringFromURLHandler.getJsonStr());
+    }
+
+    @Test
+    public void getStringFromURL_ReturnsEmptyStringWhenCustomResponseIsNotSuccess_AltParams()
+            throws InterruptedException {
+        when(httpHandler.makeServiceCall()).thenReturn(ConnectionTimeout);
+        stringFromURLHandler.getStringFromURL(callBack);
+        waitToShutDownExecutorService();
+        assertEquals("",stringFromURLHandler.getJsonStr());
+    }
+
+    private void waitToShutDownExecutorService() throws InterruptedException {
+        executorService.shutdown();
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
     }
 }

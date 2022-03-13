@@ -4,7 +4,8 @@ public enum CustomResponse {
     ConnectionOK("Successful connection"),
     ConnectionTimeout("Could not connect"),
     ReadFailure("Failed to download"),
-    EmptyContent("Lot inventory is empty");
+    ReadSuccess("Successfully downloaded"),
+    Empty_Content("Lot inventory is empty");
 
     private String message;
 

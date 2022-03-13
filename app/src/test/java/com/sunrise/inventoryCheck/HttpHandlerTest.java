@@ -40,21 +40,21 @@ public class HttpHandlerTest {
     @Test
     public void makeServiceCall_ReturnsNullWhenURLisNull() throws NullPointerException {
         httpHandler.setUrl(null);
-        String result = httpHandler.makeServiceCall();
-        assertNull(result);
+        httpHandler.makeServiceCall();
+        assertNull(httpHandler.getDownloadContent());
     }
 
     @Test
     public void makeServiceCall_ReturnsString() {
-        String result = httpHandler.makeServiceCall();
-        assertEquals("anyString\n", result);
+        httpHandler.makeServiceCall();
+        assertEquals("anyString\n", httpHandler.getDownloadContent());
     }
 
     @Test
     public void makeServiceCall_ReturnsString_Correctly() throws IOException {
         when(conn.getInputStream()).thenReturn(new ByteArrayInputStream("anotherString".getBytes()));
-        String result = httpHandler.makeServiceCall();
-        assertEquals("anotherString\n", result);
+        httpHandler.makeServiceCall();
+        assertEquals("anotherString\n", httpHandler.getDownloadContent());
     }
 
 }

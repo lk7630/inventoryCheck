@@ -1,5 +1,8 @@
 package com.sunrise.inventoryCheck;
 
+import com.sunrise.inventoryCheck.enums.CustomResponse;
+
 public interface RepositoryCallBack {
-    public void onComplete(String result);
+
+    void onReadComplete(String result, CustomResponse response);
 }

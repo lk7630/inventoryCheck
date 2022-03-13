@@ -30,6 +30,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.sunrise.inventoryCheck.enums.CustomResponse;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private final JsonHandler jsonHandler = new JsonHandler();
     private RecyclerView recyclerView;
     private LayoutManager layoutManager;
-    public TextView bcPanIDTextView;
+    public TextView statusView;
     private TextView folderView;
     private TextView totalWeightView;
     private Spinner sortSpinner;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button scanButton = (Button) findViewById(R.id.scanButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        bcPanIDTextView = (TextView) findViewById(R.id.editTextNumber);
+        statusView = (TextView) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         folderView = (TextView) findViewById(R.id.folderView);
         totalWeightView = (TextView) findViewById(R.id.totalWeightView);
@@ -85,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                         String resultText = processBarcode(barcodeText);
                         if (resultText.equals("wrong barcode")) {
-                            bcPanIDTextView.setTextColor(RED);
-                            bcPanIDTextView.setText("wrong barcode !");
+                            statusView.setTextColor(RED);
+                            statusView.setText("wrong barcode !");
                         } else {
-                            bcPanIDTextView.setText(resultText);
+                            statusView.setText(resultText);
                             progressBar.setVisibility(VISIBLE);
                             returnStringFromAPI(resultText);
                         }
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         scanButton.setOnClickListener(v -> {
-            bcPanIDTextView.setText("");
+            statusView.setText("");
             Intent scanIntent = new Intent(this, BarcodeScanActivity.class);
             scanActivityLauncher.launch(scanIntent);
         });
@@ -153,19 +155,18 @@ public class MainActivity extends AppCompatActivity {
         stringFromURLHandler.setBackUpURLString(WEB_API_URL);
         stringFromURLHandler.getStringFromURL(bcPanID, new RepositoryCallBack() {
             @Override
-            public void onComplete(String result) {
+            public void onReadComplete(String result, CustomResponse response) {
 //                Log.e("from callBack", result);
                 jsonStr = result;
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
+                        statusView.setText(response.getResponseMessage());
                         updateLotInfo();
                     }
                 });
             }
         });
-
-        Log.e("afafa", "addadad");
     }
 
     private void updateLotInfo() {
