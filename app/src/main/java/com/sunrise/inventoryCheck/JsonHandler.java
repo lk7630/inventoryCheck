@@ -23,7 +23,13 @@ public class JsonHandler {
 
     public HashMap<Object, Object> getHashMapFromJson(String jsonStr) {
         HashMap<Object, Object> jsonHashMap = new HashMap<>();
-        if (jsonStr != null) {
+        jsonHashMap.put("panID", "N/A");
+        jsonHashMap.put("folder", "N/A");
+        jsonHashMap.put("lot", "N/A");
+        jsonHashMap.put("lotItems", new ArrayList<>());
+        lotItemList = new ArrayList<>();
+
+        if (jsonStr != null && !jsonStr.equals("")) {
             JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(jsonStr);
@@ -32,7 +38,7 @@ public class JsonHandler {
                 jsonHashMap.put("folder", parseStringFromJsonObject(jsonObject, "folder"));
                 jsonHashMap.put("lot", parseStringFromJsonObject(jsonObject, "lot"));
 
-                lotItemList = new ArrayList<>();
+
                 for (int i = 0; i < jsonArray.length(); i++) {
                     HashMap<Object, Object> lotItems = new HashMap<>();
                     JSONObject lotItemsObject = jsonArray.getJSONObject(i);

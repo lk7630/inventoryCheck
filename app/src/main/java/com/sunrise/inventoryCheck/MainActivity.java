@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         isDescOrder = false;
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
+        jsonHashMap=new HashMap<Object, Object>();
 
         //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(

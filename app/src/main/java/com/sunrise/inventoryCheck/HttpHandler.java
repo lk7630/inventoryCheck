@@ -1,7 +1,8 @@
 package com.sunrise.inventoryCheck;
 
 import static com.sunrise.inventoryCheck.enums.CustomResponse.ConnectionTimeout;
-import static com.sunrise.inventoryCheck.enums.CustomResponse.Empty_Content;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.EmptyContent;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.NotConnected;
 import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
 
 import android.util.Log;
@@ -53,14 +54,14 @@ public class HttpHandler {
             //todo add logging service here to log connection_ok
             InputStream in = new BufferedInputStream(conn.getInputStream());
             downloadContent = convertStreamToString(in);
-            return downloadContent.isEmpty() ? Empty_Content : ReadSuccess;
+            return downloadContent.isEmpty() ? EmptyContent : ReadSuccess;
         } catch (SocketTimeoutException exception) {
             Log.e("Error: ", "Connection timeout after 2s");
             return ConnectionTimeout;
         } catch (IOException e) {
             e.printStackTrace();
+            return NotConnected;
         }
-        return null;
     }
 
     private String convertStreamToString(InputStream is) {
