@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < lotItemArray.size(); i++) {
                 sum += Integer.parseInt((String) lotItemArray.get(i).get("weight"));
             }
-            totalWeightView.setText("Total: \n\t" + sum + " lbs");
+            totalWeightView.setText("Total weight: " + sum + " lbs");
         }
     }
 

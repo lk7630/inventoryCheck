@@ -108,10 +108,10 @@
         android:layout_height="1dp"
         android:layout_below="@id/folderView"
         android:layout_marginStart="30dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginEnd="30dp"
         android:background="@android:color/holo_orange_light"
-        app:layout_constraintBottom_toTopOf="@+id/scanButton"
+        app:layout_constraintBottom_toTopOf="@id/totalWeightView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
     <TextView
@@ -119,33 +119,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sectionDivider2"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/editTextNumber"/>
 
     <Button
         android:id="@+id/scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="36dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="15dp"
         android:text="Scan"
         android:padding="10dp"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
+    <Button
+        android:id="@+id/inputButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="15dp"
+        android:text="Input"
+        android:padding="10dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <TextView
         android:id="@+id/editTextNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
         android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/scanButton" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <ProgressBar
         android:id="@+id/progressBar"
