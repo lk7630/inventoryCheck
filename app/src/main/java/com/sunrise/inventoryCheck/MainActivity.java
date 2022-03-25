@@ -10,6 +10,7 @@ import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
 import static java.util.Arrays.asList;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -40,8 +42,10 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String WEB_API_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
-    public static final String LOCAL_API_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
+    public static final String WEB_GET_LOT_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
+    public static final String LOCAL_GET_LOT_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
+    public static final String WEB_GET_FOLDER_URL = "http://38.122.193.242:10081/plastic/GetFolderList/";
+    public static final String LOCAL_GET_FOLDER_URL = "http://192.168.168.8:10081/plastic/GetFolderList/";
     private String jsonStr;
     private HashMap<Object, Object> jsonHashMap;
     private final JsonHandler jsonHandler = new JsonHandler();
@@ -57,12 +61,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean isDescOrder;
     private String sortKey;
     private ProgressBar progressBar;
+    private Button scanButton;
+    private Button inputButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button scanButton = (Button) findViewById(R.id.scanButton);
+        scanButton = (Button) findViewById(R.id.scanButton);
+        inputButton = (Button) findViewById(R.id.inputButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         statusView = (TextView) findViewById(R.id.editTextNumber);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -74,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         isDescOrder = false;
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        jsonHashMap=new HashMap<Object, Object>();
+        jsonHashMap = new HashMap<Object, Object>();
 
         //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
@@ -93,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             statusView.setText(resultText);
                             progressBar.setVisibility(VISIBLE);
-                            returnStringFromAPI(resultText);
+                            returnStringFromAPI(resultText, asList(LOCAL_GET_LOT_URL, WEB_GET_LOT_URL),
+                                    callBack);
                         }
                     }
                 });
@@ -102,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
             statusView.setText("");
             Intent scanIntent = new Intent(this, BarcodeScanActivity.class);
             scanActivityLauncher.launch(scanIntent);
+        });
+
+        inputButton.setOnClickListener(v -> {
+            progressBar.setVisibility(VISIBLE);
+            returnStringFromAPI(null, asList(LOCAL_GET_FOLDER_URL, WEB_GET_FOLDER_URL), callBack2);
         });
 
 
@@ -149,28 +162,39 @@ public class MainActivity extends AppCompatActivity {
                 : "wrong barcode!";
     }
 
-    private void returnStringFromAPI(String bcPanID) {
+    private void returnStringFromAPI(String bcPanID, List<String> urls, RepositoryCallBack callBack) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),
                 Executors.newSingleThreadExecutor());
-        stringFromURLHandler.setURLString(LOCAL_API_URL);
-        stringFromURLHandler.setBackUpURLString(WEB_API_URL);
-        stringFromURLHandler.getStringFromURL(bcPanID, new RepositoryCallBack() {
-            @Override
-            public void onReadComplete(String result, CustomResponse response) {
-//                Log.e("from callBack", result);
-                jsonStr = result;
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        statusView.setText(response.getResponseMessage());
-                        updateLotInfo();
-                    }
-                });
-            }
-        });
+        stringFromURLHandler.setURLString(urls.get(0));
+        if (urls.size() > 1) {
+            stringFromURLHandler.setBackUpURLString(urls.get(1));
+        }
+        stringFromURLHandler.getStringFromURL(bcPanID, callBack);
     }
 
-    private void updateLotInfo() {
+    private RepositoryCallBack callBack = new RepositoryCallBack() {
+        @Override
+        public void onReadComplete(String result, CustomResponse response) {
+            jsonStr = result;
+            new Handler(Looper.getMainLooper()).post(() -> {
+                statusView.setText(response.getResponseMessage());
+                updateLotInfo(jsonStr);
+            });
+        }
+    };
+
+    private RepositoryCallBack callBack2 = new RepositoryCallBack() {
+        @Override
+        public void onReadComplete(String result, CustomResponse response) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                statusView.setText(response.getResponseMessage());
+                progressBar.setVisibility(GONE);
+                showDialog();
+            });
+        }
+    };
+
+    private void updateLotInfo(String jsonStr) {
         jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
         jsonList = jsonHandler.getLotItemList();
         displayLot(jsonHashMap);
@@ -214,11 +238,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSpinner(List<String> sortArrayList) {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
                 R.layout.support_simple_spinner_dropdown_item, sortArrayList);
         sortSpinner.setAdapter(spinnerAdapter);
         sortSpinner.setSelection(0);
         sortKey = sortArrayList.get(0);
+    }
+
+    private void showDialog() {
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setTitle("title");
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.dialog_layout);
+        dialog.show();
+
+        Spinner typeSpinner = dialog.findViewById(R.id.dialogSpinner);
+        typeSpinner.setSelection(0);
+        EditText lotEditText = dialog.findViewById(R.id.lotEditText);
+        Button dialogSubmitButton = dialog.findViewById(R.id.submitButton);
+        dialogSubmitButton.setOnClickListener(v -> {
+        });
+        Button cancelButton = dialog.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
     }
 
 }
