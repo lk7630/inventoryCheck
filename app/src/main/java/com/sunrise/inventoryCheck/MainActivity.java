@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private RepositoryCallBack callBack2 = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
+            jsonStr=result;
             new Handler(Looper.getMainLooper()).post(() -> {
                 statusView.setText(response.getResponseMessage());
                 progressBar.setVisibility(GONE);
@@ -246,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
+        HashMap<Object,Object> jsonHash=jsonHandler.getFolderIDList(jsonStr);
         Dialog dialog = new Dialog(MainActivity.this);
         dialog.setTitle("title");
         dialog.setCancelable(true);

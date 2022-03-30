@@ -61,6 +61,20 @@ public class JsonHandler {
         return jsonHashMap;
     }
 
+    public HashMap<Object,Object> getFolderIDList(String jsonString){
+        HashMap<Object, Object> jsonHashmap = new HashMap<>();
+        try {
+            JSONArray jsonArray = new JSONArray(jsonString);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                jsonHashmap.put(jsonObject.get("folderID"), jsonObject.get("code"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonHashmap;
+    }
+
     private String parseStringFromJsonObject(JSONObject jsonObject, String key) {
         try {
             return jsonObject.getString(key).equals("null") || jsonObject.getString(key).equals("")
