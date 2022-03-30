@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
@@ -186,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
     private RepositoryCallBack callBack2 = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
-            jsonStr=result;
+            jsonStr = result;
             new Handler(Looper.getMainLooper()).post(() -> {
                 statusView.setText(response.getResponseMessage());
                 progressBar.setVisibility(GONE);
@@ -247,21 +249,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
-        HashMap<Object,Object> jsonHash=jsonHandler.getFolderIDList(jsonStr);
+        HashMap<Object, Object> jsonHash = jsonHandler.getFolderIDList(jsonStr);
         Dialog dialog = new Dialog(MainActivity.this);
         dialog.setTitle("title");
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.dialog_layout);
         dialog.show();
 
-        Spinner typeSpinner = dialog.findViewById(R.id.dialogSpinner);
-        typeSpinner.setSelection(0);
+        AutoCompleteTextView typeView = dialog.findViewById(R.id.autoCompleteTextView);
+        List<Object> hashValues = asList(jsonHash.keySet().toArray());
+        List<String> typeViewValues = new ArrayList<>(hashValues.size());
+        hashValues.forEach(object -> typeViewValues.add(object.toString()));
+
+        ArrayAdapter<String> typeViewAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.select_dialog_item, typeViewValues);
+        typeView.setAdapter(typeViewAdapter);
+        typeView.setThreshold(1);
         EditText lotEditText = dialog.findViewById(R.id.lotEditText);
         Button dialogSubmitButton = dialog.findViewById(R.id.submitButton);
         dialogSubmitButton.setOnClickListener(v -> {
+            String folder = (jsonHash.get(typeView.getText().toString())).toString();
+            getLotInfoByFolderID(folder, lotEditText.getText().toString());
+            dialog.dismiss();
         });
         Button cancelButton = dialog.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(v -> dialog.dismiss());
     }
 
+    private void getLotInfoByFolderID(String folder, String lot) {
+        statusView.setText(folder + "-"+lot);
+        progressBar.setVisibility(VISIBLE);
+        returnStringFromAPI(lot, asList(LOCAL_GET_LOT_URL+folder+"/", WEB_GET_LOT_URL+folder+"/"),
+                callBack);
+    }
 }

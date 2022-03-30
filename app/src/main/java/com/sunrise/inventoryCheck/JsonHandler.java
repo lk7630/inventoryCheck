@@ -67,7 +67,7 @@ public class JsonHandler {
             JSONArray jsonArray = new JSONArray(jsonString);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                jsonHashmap.put(jsonObject.get("folderID"), jsonObject.get("code"));
+                jsonHashmap.put(jsonObject.get("code"), jsonObject.get("folderID"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
