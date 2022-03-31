@@ -1,15 +1,5 @@
 package com.sunrise.inventoryCheck;
 
-import static android.graphics.Color.GRAY;
-import static android.graphics.Color.RED;
-import static android.graphics.Color.rgb;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static androidx.recyclerview.widget.RecyclerView.Adapter;
-import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
-import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
-import static java.util.Arrays.asList;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -39,9 +29,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
+
+import static android.graphics.Color.GRAY;
+import static android.graphics.Color.RED;
+import static android.graphics.Color.rgb;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static java.util.Arrays.asList;
 
 public class MainActivity extends AppCompatActivity {
     public static final String WEB_GET_LOT_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
@@ -102,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             statusView.setText(resultText);
                             progressBar.setVisibility(VISIBLE);
-                            returnStringFromAPI(resultText, asList(LOCAL_GET_LOT_URL, WEB_GET_LOT_URL),
+                            returnStringFromAPI(resultText, asList(LOCAL_GET_LOT_URL,
+                                    WEB_GET_LOT_URL),
                                     callBack);
                         }
                     }
@@ -164,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
                 : "wrong barcode!";
     }
 
-    private void returnStringFromAPI(String bcPanID, List<String> urls, RepositoryCallBack callBack) {
+    private void returnStringFromAPI(String bcPanID, List<String> urls,
+                                     RepositoryCallBack callBack) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),
                 Executors.newSingleThreadExecutor());
         stringFromURLHandler.setURLString(urls.get(0));
@@ -231,7 +232,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void displayList(List<HashMap<Object, Object>> jsonList, String sortKey, boolean isDescOrder) {
+    private void displayList(List<HashMap<Object, Object>> jsonList, String sortKey,
+                             boolean isDescOrder) {
         if (jsonStr != null) {
             Collections.sort(jsonList, new CustomArraySort(sortKey, isDescOrder));
             Adapter listAdapter = new ViewAdapter(jsonList);
@@ -268,7 +270,8 @@ public class MainActivity extends AppCompatActivity {
         EditText lotEditText = dialog.findViewById(R.id.lotEditText);
         Button dialogSubmitButton = dialog.findViewById(R.id.submitButton);
         dialogSubmitButton.setOnClickListener(v -> {
-            String folder = (jsonHash.get(typeView.getText().toString())).toString();
+            String folder = jsonHash.get(typeView.getText().toString()).toString();
+            statusView.setText(typeView.getText() + "-" + lotEditText.getText().toString());
             getLotInfoByFolderID(folder, lotEditText.getText().toString());
             dialog.dismiss();
         });
@@ -277,9 +280,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getLotInfoByFolderID(String folder, String lot) {
-        statusView.setText(folder + "-"+lot);
         progressBar.setVisibility(VISIBLE);
-        returnStringFromAPI(lot, asList(LOCAL_GET_LOT_URL+folder+"/", WEB_GET_LOT_URL+folder+"/"),
+        returnStringFromAPI(lot, asList(LOCAL_GET_LOT_URL + folder + "/", WEB_GET_LOT_URL +
+                        folder + "/"),
                 callBack);
     }
 }
