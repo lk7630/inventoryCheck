@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private RepositoryCallBack callBack2 = new RepositoryCallBack() {
+    private final RepositoryCallBack callBack2 = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
             jsonStr = result;

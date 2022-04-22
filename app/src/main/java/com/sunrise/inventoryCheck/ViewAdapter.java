@@ -56,7 +56,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     @Override
     public ViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View v = layoutInflater.inflate(R.layout.row_layout, parent, false);
+        View v = layoutInflater.inflate(R.layout.lot_info_row_layout, parent, false);
         return new ViewHolder(v);
     }
 

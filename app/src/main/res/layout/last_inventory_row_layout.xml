@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0">
+
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="2dp"
+        android:layout_marginTop="2dp"
+        android:stretchColumns="0,1,2,3,4">
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center">
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date" />
+
+            <TextView
+                android:id="@+id/warehouse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Warehouse" />
+
+            <TextView
+                android:id="@+id/packs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Packs" />
+
+            <TextView
+                android:id="@+id/section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Section" />
+        </TableRow>
+
+    </TableLayout>
+
+    <View
+        android:id="@+id/rowDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_below="@id/tableLayout1"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:background="@android:color/darker_gray" />
+
+</TableLayout>
