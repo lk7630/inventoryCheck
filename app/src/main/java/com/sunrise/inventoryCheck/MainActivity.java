@@ -23,8 +23,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunrise.inventoryCheck.enums.CustomResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button scanButton;
     private Button inputButton;
+    private LotSystemInventory lotSystemInventory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
         jsonHashMap = new HashMap<Object, Object>();
+        lotSystemInventory = new LotSystemInventory();
 
         //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
@@ -124,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sortKey = parent.getItemAtPosition(position).toString();
-                displayList(jsonList, sortKey, isDescOrder);
+                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
             }
 
             @Override
@@ -138,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             ascText.setTextColor(rgb(255, 165, 0));
             dscText.setTypeface(dscText.getTypeface(), Typeface.NORMAL);
             dscText.setTextColor(GRAY);
-            displayList(jsonList, sortKey, isDescOrder);
+            displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
         });
 
         dscText.setOnClickListener(v -> {
@@ -147,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             dscText.setTextColor(rgb(255, 165, 0));
             ascText.setTypeface(ascText.getTypeface(), Typeface.NORMAL);
             ascText.setTextColor(GRAY);
-            displayList(jsonList, sortKey, isDescOrder);
+            displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
         });
 
         Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
@@ -199,20 +203,24 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void updateLotInfo(String jsonStr) {
-        jsonHashMap = jsonHandler.getHashMapFromJson(jsonStr);
-        jsonList = jsonHandler.getLotItemList();
-        displayLot(jsonHashMap);
+        try {
+            lotSystemInventory = new ObjectMapper().readValue(jsonStr, LotSystemInventory.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //todo throw
+        }
+        displayLot(lotSystemInventory);
         displayTotalWeight(jsonHashMap);
-        displayList((jsonList), "warehouse", isDescOrder);
+        displayList((lotSystemInventory.getLotItems()), "warehouse", isDescOrder);
         progressBar.setVisibility(GONE);
     }
 
-    private void displayLot(HashMap<Object, Object> jsonHashMap) {
+    private void displayLot(LotSystemInventory lotSystemInventory) {
         if (jsonStr == null) {
             folderView.setText("NO INFO");
         } else {
-            folderView.setText(String.format("%s - %s", jsonHashMap.get("folder").toString(),
-                    jsonHashMap.get("lot").toString()));
+            folderView.setText(String.format("%s - %s", lotSystemInventory.getFolder(),
+                    lotSystemInventory.getLot()));
         }
     }
 
@@ -232,11 +240,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void displayList(List<HashMap<Object, Object>> jsonList, String sortKey,
-                             boolean isDescOrder) {
+    private void displayList(List<LotItem> lotItems, String sortKey, boolean isDescOrder) {
         if (jsonStr != null) {
-            Collections.sort(jsonList, new CustomArraySort(sortKey, isDescOrder));
-            Adapter listAdapter = new ViewAdapter(jsonList);
+            lotItems.sort(new CustomArraySort(sortKey, isDescOrder));
+            Adapter listAdapter = new ViewAdapter(lotItems);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setHasFixedSize(true);
         }

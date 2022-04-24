@@ -1,18 +1,17 @@
 package com.sunrise.inventoryCheck;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
-public class CustomArraySort implements Comparator<HashMap<Object, Object>> {
+public class CustomArraySort implements Comparator<LotItem> {
 
     private String keyToSort;
     private final String DEFAULT_KEY = "warehouse";
     private final List<String> warehouseList = asList("1", "2", "3", "4", "5", "6", "7", "8",
             "9", "11", "12", "12B", "12C", "14", "14A", "15", "16");
-    private boolean isDescOrder = false;
+    private boolean isDescOrder;
 
     public String getKeyToSort() {
         return keyToSort;
@@ -32,35 +31,80 @@ public class CustomArraySort implements Comparator<HashMap<Object, Object>> {
     }
 
     @Override
-    public int compare(HashMap<Object, Object> o1, HashMap<Object, Object> o2) {
-        if (!o1.containsKey(keyToSort)) {
-            keyToSort = DEFAULT_KEY;
+    public int compare(LotItem lotItem1, LotItem lotItem2) {
+        switch (keyToSort) {
+            case "warehouse":
+                return sortByWarehouse(lotItem1, lotItem2);
+            case "weight":
+            case "packs":
+                return sortByInteger(lotItem1, lotItem2);
+            default:
+                return sortByString(lotItem1, lotItem2);
         }
-        if (keyToSort.equals("warehouse")) {
-            return sortByWarehouse(o1, o2);
-        }
-        if (keyToSort.equals("weight") || keyToSort.equals("packs")) {
-            if (o1.get(keyToSort) == o2.get(keyToSort)) {
-                return 0;
-            }
-            int result = Integer.parseInt((String) o1.get(keyToSort))
-                    > Integer.parseInt((String) o2.get(keyToSort))
-                    ? 1 : -1;
-            return isDescOrder ? result * (-1) : result;
-        }
-        int result = String.valueOf(o1.get(keyToSort)).compareTo(String.valueOf(o2.get(keyToSort)));
-        return isDescOrder ? result * (-1) : result;
     }
 
-    private int sortByWarehouse(HashMap<Object, Object> o1, HashMap<Object, Object> o2) {
-        int o1Index = warehouseList.contains((String) o1.get("warehouse")) ?
-                warehouseList.indexOf((String) o1.get("warehouse")) : warehouseList.size() + 1;
-        int o2Index = warehouseList.contains((String) o2.get("warehouse")) ?
-                warehouseList.indexOf((String) o2.get("warehouse")) : warehouseList.size() + 1;
+    private int sortByWarehouse(LotItem lotItem1, LotItem lotItem2) {
+        int o1Index = warehouseList.contains(lotItem1.getWarehouse()) ?
+                warehouseList.indexOf(lotItem1.getWarehouse()) : warehouseList.size() + 1;
+        int o2Index = warehouseList.contains(lotItem2.getWarehouse()) ?
+                warehouseList.indexOf(lotItem2.getWarehouse()) : warehouseList.size() + 1;
         if (o1Index == o2Index) {
             return 0;
         }
         int result = o1Index < o2Index ? -1 : 1;
         return isDescOrder ? result * (-1) : result;
+    }
+
+    private int sortByInteger(LotItem lotItem1, LotItem lotItem2) {
+        int value1 = findIntValueBasedOnSortKey(lotItem1);
+        int value2 = findIntValueBasedOnSortKey(lotItem2);
+        if (value1 == value2) {
+            return 0;
+        }
+        int result = value1 > value2 ? 1 : -1;
+        return isDescOrder ? result * (-1) : result;
+    }
+
+    private int findIntValueBasedOnSortKey(LotItem lotItem) {
+        int result = 0;
+        switch (keyToSort) {
+            case "weight":
+                result = lotItem.getWeight();
+                break;
+            case "packs":
+                result = lotItem.getPacks();
+                break;
+        }
+        return result;
+    }
+
+    private int sortByString(LotItem lotItem1, LotItem lotItem2) {
+        String value1 = findStringValueBasedOnSortKey(lotItem1);
+        String value2 = findStringValueBasedOnSortKey(lotItem2);
+        int result = value1.compareTo(value2);
+        return isDescOrder ? result * (-1) : result;
+    }
+
+    private String findStringValueBasedOnSortKey(LotItem lotitem) {
+        String result = null;
+        switch (keyToSort) {
+            case "polymer":
+                result = lotitem.getPolymer();
+                break;
+            case "packing":
+                result = lotitem.getPacking();
+                break;
+            case "form":
+                result = lotitem.getForm();
+                break;
+            case "compartment":
+                result = lotitem.getCompartment();
+                break;
+            case "grade":
+                result = lotitem.getGrade();
+                break;
+        }
+        return result;
+        //todo throw when result is null, make sure to write tests
     }
 }

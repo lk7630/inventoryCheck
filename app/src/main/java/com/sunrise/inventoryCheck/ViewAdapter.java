@@ -19,11 +19,11 @@ import static android.graphics.Typeface.BOLD_ITALIC;
 
 public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 
-    private List<HashMap<Object, Object>> values;
+    private List<LotItem> values;
     ViewHolder holder;
 
 
-    public ViewAdapter(List<HashMap<Object, Object>> values) {
+    public ViewAdapter(List<LotItem> values) {
         this.values = values;
     }
 
@@ -63,14 +63,14 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder mholder, int mposition) {
         holder = mholder;
-        String warehouse = getValueFrom("warehouse", mposition);
-        String polymer = getValueFrom("polymer", mposition);
-        String form = getValueFrom("form", mposition);
-        String compartment = getValueFrom("compartment", mposition);
-        String grade = getValueFrom("grade", mposition);
-        String packs = getValueFrom("packs", mposition);
-        String packing = getValueFrom("packing", mposition);
-        String weight = getValueFrom("weight", mposition);
+        String warehouse = values.get(mposition).getWarehouse();
+        String polymer = values.get(mposition).getPolymer();
+        String form = values.get(mposition).getForm();
+        String compartment = values.get(mposition).getCompartment();
+        String grade = values.get(mposition).getGrade();
+        String packs = String.valueOf(values.get(mposition).getPacks());
+        String packing = values.get(mposition).getPacking();
+        String weight = String.valueOf(values.get(mposition).getWeight());
 
         showText(holder.warehouse, warehouse);
         showText(holder.polymer, polymer);
@@ -87,13 +87,10 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         return values.size();
     }
 
-    private String getValueFrom(String objectKey, int pos) {
-        String returnResult = (String) values.get(pos).get(objectKey);
-        return returnResult.equals("null") ? "" : returnResult;
-    }
-
     private void showText(TextView textView, String variable) {
-        if (textView.getId() == R.id.polymerView) {
+        if (variable == null) {
+            textView.setText("");
+        } else if (textView.getId() == R.id.polymerView) {
             customizeView(variable, "polymer");
         } else if (textView.getId() == R.id.gradeView) {
             variable = variable.equals("PARTIAL") ? "P" : "";
