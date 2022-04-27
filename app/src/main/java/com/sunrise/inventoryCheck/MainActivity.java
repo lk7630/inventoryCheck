@@ -28,7 +28,6 @@ import com.sunrise.inventoryCheck.enums.CustomResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -49,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String LOCAL_GET_LOT_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
     public static final String WEB_GET_FOLDER_URL = "http://38.122.193.242:10081/plastic/GetFolderList/";
     public static final String LOCAL_GET_FOLDER_URL = "http://192.168.168.8:10081/plastic/GetFolderList/";
+    public static final String WEB_GET_INVENTORY_COUNT_URL = "http://38.122.193.242:10081/plastic/GetInventoryCountInfo/";
+    public static final String LOCAL_GET_INVENTORY_COUNT_URL = "http://192.168.168.8:10081/plastic/GetInventoryCountInfo/";
     private String jsonStr;
-    private HashMap<Object, Object> jsonHashMap;
+    private String lastInventoryStr;
     private final JsonHandler jsonHandler = new JsonHandler();
     private RecyclerView recyclerView;
     private LayoutManager layoutManager;
@@ -58,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView folderView;
     private TextView totalWeightView;
     private Spinner sortSpinner;
-    private List<HashMap<Object, Object>> jsonList;
     private TextView ascText;
     private TextView dscText;
     private boolean isDescOrder;
@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         isDescOrder = false;
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        jsonHashMap = new HashMap<Object, Object>();
         lotSystemInventory = new LotSystemInventory();
 
         //back from Activity
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.setVisibility(VISIBLE);
                             returnStringFromAPI(resultText, asList(LOCAL_GET_LOT_URL,
                                     WEB_GET_LOT_URL),
-                                    callBack);
+                                    callBackFromGetLotInfo);
                         }
                     }
                 });
@@ -120,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
 
         inputButton.setOnClickListener(v -> {
             progressBar.setVisibility(VISIBLE);
-            returnStringFromAPI(null, asList(LOCAL_GET_FOLDER_URL, WEB_GET_FOLDER_URL), callBack2);
+            returnStringFromAPI(null, asList(LOCAL_GET_FOLDER_URL, WEB_GET_FOLDER_URL),
+                    callBackFromGetFolderList);
         });
-
 
         sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 : "wrong barcode!";
     }
 
-    private void returnStringFromAPI(String bcPanID, List<String> urls,
+    private void returnStringFromAPI(String param, List<String> urls,
                                      RepositoryCallBack callBack) {
         StringFromURLHandler stringFromURLHandler = new StringFromURLHandler(new HttpHandler(),
                 Executors.newSingleThreadExecutor());
@@ -176,10 +175,10 @@ public class MainActivity extends AppCompatActivity {
         if (urls.size() > 1) {
             stringFromURLHandler.setBackUpURLString(urls.get(1));
         }
-        stringFromURLHandler.getStringFromURL(bcPanID, callBack);
+        stringFromURLHandler.getStringFromURL(param, callBack);
     }
 
-    private RepositoryCallBack callBack = new RepositoryCallBack() {
+    private final RepositoryCallBack callBackFromGetLotInfo = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
             jsonStr = result;
@@ -190,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private final RepositoryCallBack callBack2 = new RepositoryCallBack() {
+    private final RepositoryCallBack callBackFromGetFolderList = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
             jsonStr = result;
@@ -202,6 +201,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private final RepositoryCallBack callBackFromLastInventoryCount = new RepositoryCallBack() {
+        @Override
+        public void onReadComplete(String result, CustomResponse response) {
+            lastInventoryStr = result;
+            List<LastInventory> aa;
+            try {
+                aa = (List<LastInventory>) new ObjectMapper().readValue(lastInventoryStr, LastInventory.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new Handler(Looper.getMainLooper()).post(() -> {
+                statusView.setText(response.getResponseMessage());
+                progressBar.setVisibility(GONE);
+            });
+        }
+    };
+
     private void updateLotInfo(String jsonStr) {
         try {
             lotSystemInventory = new ObjectMapper().readValue(jsonStr, LotSystemInventory.class);
@@ -209,8 +225,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             //todo throw
         }
+        if (lotSystemInventory.getPanID() != null) {
+            returnStringFromAPI(lotSystemInventory.getPanID(),
+                    asList(LOCAL_GET_INVENTORY_COUNT_URL,WEB_GET_INVENTORY_COUNT_URL),
+                    callBackFromLastInventoryCount);
+        }
         displayLot(lotSystemInventory);
-        displayTotalWeight(jsonHashMap);
+        displayTotalWeight(lotSystemInventory.getLotItems());
         displayList((lotSystemInventory.getLotItems()), "warehouse", isDescOrder);
         progressBar.setVisibility(GONE);
     }
@@ -224,18 +245,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void displayTotalWeight(HashMap<Object, Object> jsonHashMap) {
+    private void displayTotalWeight(List<LotItem> lotItems) {
         if (jsonStr == null) {
             totalWeightView.setText("");
-        } else if (jsonHashMap.get("lotItems") == null || jsonHashMap.get("lotItems").equals("")) {
+        } else if (lotItems.isEmpty()) {
             totalWeightView.setText("Total weight: 0");
         } else {
-            ArrayList<HashMap<Object, Object>> lotItemArray = (ArrayList<HashMap<Object, Object>>)
-                    jsonHashMap.get("lotItems");
-            int sum = 0;
-            for (int i = 0; i < lotItemArray.size(); i++) {
-                sum += Integer.parseInt((String) lotItemArray.get(i).get("weight"));
-            }
+            int sum = lotItems.stream().mapToInt(LotItem::getWeight).sum();
             totalWeightView.setText("Total weight: " + sum + " lbs");
         }
     }
@@ -270,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         List<String> typeViewValues = new ArrayList<>(hashValues.size());
         hashValues.forEach(object -> typeViewValues.add(object.toString()));
 
-        ArrayAdapter<String> typeViewAdapter = new ArrayAdapter<String>(MainActivity.this,
+        ArrayAdapter<String> typeViewAdapter = new ArrayAdapter<>(MainActivity.this,
                 android.R.layout.select_dialog_item, typeViewValues);
         typeView.setAdapter(typeViewAdapter);
         typeView.setThreshold(1);
@@ -289,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
     private void getLotInfoByFolderID(String folder, String lot) {
         progressBar.setVisibility(VISIBLE);
         returnStringFromAPI(lot, asList(LOCAL_GET_LOT_URL + folder + "/", WEB_GET_LOT_URL +
-                        folder + "/"),
-                callBack);
+                        folder + "/"), callBackFromGetLotInfo);
     }
 }
