@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,10 +25,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sunrise.inventoryCheck.enums.CustomResponse;
+import com.sunrise.inventoryCheck.enums.ViewState;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,6 +46,7 @@ import static android.view.View.VISIBLE;
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
 import static java.util.Arrays.asList;
 
 public class MainActivity extends AppCompatActivity {
@@ -67,11 +73,17 @@ public class MainActivity extends AppCompatActivity {
     private Button scanButton;
     private Button inputButton;
     private LotSystemInventory lotSystemInventory;
+    private LinearLayout linearLayout;
+    private ViewState viewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        viewState = LotInfo;
+        linearLayout = findViewById(R.id.linearView);
+        buildLayout(viewState);
+        isDescOrder = false;
         scanButton = (Button) findViewById(R.id.scanButton);
         inputButton = (Button) findViewById(R.id.inputButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -79,10 +91,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         folderView = (TextView) findViewById(R.id.folderView);
         totalWeightView = (TextView) findViewById(R.id.totalWeightView);
-        sortSpinner = (Spinner) findViewById(R.id.spinner);
-        ascText = (TextView) findViewById(R.id.ascText);
-        dscText = (TextView) findViewById(R.id.dscText);
-        isDescOrder = false;
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
         lotSystemInventory = new LotSystemInventory();
@@ -135,28 +143,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ascText.setOnClickListener(v -> {
-            isDescOrder = false;
-            ascText.setTypeface(ascText.getTypeface(), Typeface.ITALIC);
-            ascText.setTextColor(rgb(255, 165, 0));
-            dscText.setTypeface(dscText.getTypeface(), Typeface.NORMAL);
-            dscText.setTextColor(GRAY);
-            displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
-        });
-
-        dscText.setOnClickListener(v -> {
-            isDescOrder = true;
-            dscText.setTypeface(dscText.getTypeface(), Typeface.ITALIC);
-            dscText.setTextColor(rgb(255, 165, 0));
-            ascText.setTypeface(ascText.getTypeface(), Typeface.NORMAL);
-            ascText.setTextColor(GRAY);
-            displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
-        });
-
         Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
         Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
         List<String> sortArrayList = asList("warehouse", "polymer", "packing");
         loadSpinner(sortArrayList);
+    }
+
+    private void buildLayout(ViewState viewState) {
+        if (viewState == LotInfo) {
+            linearLayout.addView(getLayoutInflater().inflate(R.layout.lot_info_header,linearLayout,false));
+            sortSpinner = (Spinner) findViewById(R.id.spinner);
+            ascText = (TextView) findViewById(R.id.ascText);
+            dscText = (TextView) findViewById(R.id.dscText);
+            ascText.setOnClickListener(v -> {
+                isDescOrder = false;
+                ascText.setTypeface(ascText.getTypeface(), Typeface.ITALIC);
+                ascText.setTextColor(rgb(255, 165, 0));
+                dscText.setTypeface(dscText.getTypeface(), Typeface.NORMAL);
+                dscText.setTextColor(GRAY);
+                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+            });
+
+            dscText.setOnClickListener(v -> {
+                isDescOrder = true;
+                dscText.setTypeface(dscText.getTypeface(), Typeface.ITALIC);
+                dscText.setTextColor(rgb(255, 165, 0));
+                ascText.setTypeface(ascText.getTypeface(), Typeface.NORMAL);
+                ascText.setTextColor(GRAY);
+                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+            });
+        }
     }
 
     private String processBarcode(String barcode) {
@@ -205,10 +221,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
             lastInventoryStr = result;
-            List<LastInventory> aa;
+
+            ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+            List<LastInventory> myObjects = new ArrayList<>();
             try {
-                aa = (List<LastInventory>) new ObjectMapper().readValue(lastInventoryStr, LastInventory.class);
-            } catch (IOException e) {
+                myObjects = Arrays.asList(objectMapper.readValue(lastInventoryStr, LastInventory[].class));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             new Handler(Looper.getMainLooper()).post(() -> {
@@ -259,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayList(List<LotItem> lotItems, String sortKey, boolean isDescOrder) {
         if (jsonStr != null) {
             lotItems.sort(new CustomArraySort(sortKey, isDescOrder));
-            Adapter listAdapter = new ViewAdapter(lotItems);
+            Adapter listAdapter = new LotInfoViewAdapter(lotItems);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setHasFixedSize(true);
         }

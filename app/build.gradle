@@ -52,5 +52,6 @@ dependencies {
     //BUNDLED MODE ML KIT
     implementation 'com.google.mlkit:barcode-scanning:17.0.0'
     // a dependency on Jackson Databind
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.9'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.2'
 }

@@ -1,19 +1,27 @@
 package com.sunrise.inventoryCheck;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 
 public class LastInventory {
+    @JsonProperty("warehouse")
     private String wareHouse;
-    private LocalDate date;
+    @JsonFormat(shape = STRING, pattern = "M/d/yyyy")
+    private LocalDate inventoryDate;
     private String section;
-    private int packs;
+    private int packCount;
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getInventoryDate() {
+        return inventoryDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setInventoryDate(LocalDate inventoryDate) {
+        this.inventoryDate = inventoryDate;
     }
 
     public String getWareHouse() {
@@ -32,11 +40,11 @@ public class LastInventory {
         this.section = section;
     }
 
-    public int getPacks() {
-        return packs;
+    public int getPackCount() {
+        return packCount;
     }
 
-    public void setPacks(int packs) {
-        this.packs = packs;
+    public void setPackCount(int packCount) {
+        this.packCount = packCount;
     }
 }

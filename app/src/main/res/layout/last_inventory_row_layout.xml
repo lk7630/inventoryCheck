@@ -29,25 +29,25 @@
             android:textAlignment="center">
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/dateLastInventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date" />
 
             <TextView
-                android:id="@+id/warehouse"
+                android:id="@+id/warehouseLastInventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Warehouse" />
 
             <TextView
-                android:id="@+id/packs"
+                android:id="@+id/packCountLastInventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Packs" />
 
             <TextView
-                android:id="@+id/section"
+                android:id="@+id/sectionLastinventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Section" />

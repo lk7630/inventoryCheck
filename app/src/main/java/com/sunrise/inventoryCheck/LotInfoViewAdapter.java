@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
 import java.util.List;
 
 import static android.graphics.Color.BLACK;
@@ -17,17 +16,17 @@ import static android.graphics.Color.RED;
 import static android.graphics.Color.rgb;
 import static android.graphics.Typeface.BOLD_ITALIC;
 
-public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
+public class LotInfoViewAdapter extends RecyclerView.Adapter<LotInfoViewAdapter.ViewHolder> {
 
-    private List<LotItem> values;
+    private final List<LotItem> values;
     ViewHolder holder;
 
 
-    public ViewAdapter(List<LotItem> values) {
+    public LotInfoViewAdapter(List<LotItem> values) {
         this.values = values;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public View layout;
         public TextView warehouse;
         public TextView polymer;
@@ -53,8 +52,9 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         }
     }
 
+    @NonNull
     @Override
-    public ViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public LotInfoViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View v = layoutInflater.inflate(R.layout.lot_info_row_layout, parent, false);
         return new ViewHolder(v);

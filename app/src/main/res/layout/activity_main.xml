@@ -18,73 +18,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="100dp"
-        android:spinnerMode="dropdown"
-        android:layout_marginTop="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/folderView" />
-
-    <TextView
-        android:id="@+id/sortBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        android:text="Sort by: "
-        app:layout_constraintEnd_toStartOf="@id/spinner"
-        app:layout_constraintTop_toBottomOf="@id/folderView"/>
-
-    <TextView
-        android:id="@+id/ascText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="180dp"
-        android:layout_marginTop="5dp"
-        android:text="ASC"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/folderView" />
-
-    <TextView
-        android:id="@+id/textDivider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
-        android:text="I"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@id/ascText"
-        app:layout_constraintTop_toBottomOf="@id/folderView"/>
-
-    <TextView
-        android:id="@+id/dscText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="DSC"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@id/textDivider"
-        app:layout_constraintTop_toBottomOf="@id/folderView"/>
+        app:layout_constraintTop_toBottomOf="@id/folderView"
+        android:orientation="horizontal" />
 
     <View
         android:id="@+id/sectionDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/spinner"
+        android:layout_below="@id/linearView"
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="30dp"
         android:background="@android:color/holo_orange_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner" />
+        app:layout_constraintTop_toBottomOf="@id/linearView" />
 
 
     <androidx.recyclerview.widget.RecyclerView
