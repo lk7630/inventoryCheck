@@ -37,11 +37,10 @@ public class LastInventoryViewAdapter extends RecyclerView.Adapter<LastInventory
         }
     }
 
-    @NonNull
     @Override
     public LastInventoryViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View v = layoutInflater.inflate(R.layout.lot_info_row_layout, parent, false);
+        View v = layoutInflater.inflate(R.layout.last_inventory_row_layout, parent, false);
         return new ViewHolder(v);
     }
 

@@ -52,7 +52,6 @@ public class LotInfoViewAdapter extends RecyclerView.Adapter<LotInfoViewAdapter.
         }
     }
 
-    @NonNull
     @Override
     public LotInfoViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());

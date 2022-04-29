@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearView"
+        android:id="@+id/lotInfoHeaderView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/folderView"
@@ -29,14 +29,22 @@
         android:id="@+id/sectionDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/linearView"
+        android:layout_below="@id/lotInfoHeaderView"
         android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="30dp"
         android:background="@android:color/holo_orange_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearView" />
+        app:layout_constraintTop_toBottomOf="@id/lotInfoHeaderView" />
+
+    <LinearLayout
+        android:id="@+id/lastInventoryHeaderView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toBottomOf="@id/sectionDivider"
+        android:orientation="horizontal" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -51,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sectionDivider"
+        app:layout_constraintTop_toBottomOf="@+id/lastInventoryHeaderView"
         app:layout_constraintVertical_bias="1.0" />
 
     <View

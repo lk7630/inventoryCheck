@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -46,6 +45,7 @@ import static android.view.View.VISIBLE;
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static com.sunrise.inventoryCheck.enums.ViewState.LastInventoryCount;
 import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
 import static java.util.Arrays.asList;
 
@@ -73,24 +73,19 @@ public class MainActivity extends AppCompatActivity {
     private Button scanButton;
     private Button inputButton;
     private LotSystemInventory lotSystemInventory;
-    private LinearLayout linearLayout;
+    private LinearLayout lotInfoHeader;
+    private LinearLayout lastInventoryHeader;
     private ViewState viewState;
+    private Button switchButton;
+    private List<LastInventory> lastInventories = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewState = LotInfo;
-        linearLayout = findViewById(R.id.linearView);
-        buildLayout(viewState);
+        viewState = LastInventoryCount;
+        findViews();
         isDescOrder = false;
-        scanButton = (Button) findViewById(R.id.scanButton);
-        inputButton = (Button) findViewById(R.id.inputButton);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        statusView = (TextView) findViewById(R.id.editTextNumber);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        folderView = (TextView) findViewById(R.id.folderView);
-        totalWeightView = (TextView) findViewById(R.id.totalWeightView);
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
         lotSystemInventory = new LotSystemInventory();
@@ -118,7 +113,41 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+        buildListeners(scanActivityLauncher);
 
+    }
+
+    private void buildListeners(ActivityResultLauncher<Intent> scanActivityLauncher) {
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sortKey = parent.getItemAtPosition(position).toString();
+                displayLotInfo(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        List<String> sortArrayList = asList("warehouse", "polymer", "packing");
+        loadSpinner(sortArrayList);
+        ascText.setOnClickListener(v -> {
+            isDescOrder = false;
+            ascText.setTypeface(ascText.getTypeface(), Typeface.ITALIC);
+            ascText.setTextColor(rgb(255, 165, 0));
+            dscText.setTypeface(dscText.getTypeface(), Typeface.NORMAL);
+            dscText.setTextColor(GRAY);
+            displayLotInfo(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+        });
+
+        dscText.setOnClickListener(v -> {
+            isDescOrder = true;
+            dscText.setTypeface(dscText.getTypeface(), Typeface.ITALIC);
+            dscText.setTextColor(rgb(255, 165, 0));
+            ascText.setTypeface(ascText.getTypeface(), Typeface.NORMAL);
+            ascText.setTextColor(GRAY);
+            displayLotInfo(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+        });
         scanButton.setOnClickListener(v -> {
             statusView.setText("");
             Intent scanIntent = new Intent(this, BarcodeScanActivity.class);
@@ -131,48 +160,36 @@ public class MainActivity extends AppCompatActivity {
                     callBackFromGetFolderList);
         });
 
-        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sortKey = parent.getItemAtPosition(position).toString();
-                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
+        switchButton.setOnClickListener(view -> {
+            if (viewState == LotInfo) {
+                viewState = LastInventoryCount;
+            } else {
+                viewState = LotInfo;
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            showItemList(viewState);
         });
-
-        Log.e("aaaa", String.valueOf("super sack".compareTo("box")));
-        Log.e("aaaa", String.valueOf("HDPE".compareTo("PP")));
-        List<String> sortArrayList = asList("warehouse", "polymer", "packing");
-        loadSpinner(sortArrayList);
     }
 
-    private void buildLayout(ViewState viewState) {
-        if (viewState == LotInfo) {
-            linearLayout.addView(getLayoutInflater().inflate(R.layout.lot_info_header,linearLayout,false));
-            sortSpinner = (Spinner) findViewById(R.id.spinner);
-            ascText = (TextView) findViewById(R.id.ascText);
-            dscText = (TextView) findViewById(R.id.dscText);
-            ascText.setOnClickListener(v -> {
-                isDescOrder = false;
-                ascText.setTypeface(ascText.getTypeface(), Typeface.ITALIC);
-                ascText.setTextColor(rgb(255, 165, 0));
-                dscText.setTypeface(dscText.getTypeface(), Typeface.NORMAL);
-                dscText.setTextColor(GRAY);
-                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
-            });
-
-            dscText.setOnClickListener(v -> {
-                isDescOrder = true;
-                dscText.setTypeface(dscText.getTypeface(), Typeface.ITALIC);
-                dscText.setTextColor(rgb(255, 165, 0));
-                ascText.setTypeface(ascText.getTypeface(), Typeface.NORMAL);
-                ascText.setTextColor(GRAY);
-                displayList(lotSystemInventory.getLotItems(), sortKey, isDescOrder);
-            });
-        }
+    private void findViews() {
+        lotInfoHeader = findViewById(R.id.lotInfoHeaderView);
+        lotInfoHeader.addView(getLayoutInflater().inflate(R.layout.lot_info_header, lotInfoHeader,
+                false));
+        lotInfoHeader.setVisibility(GONE);
+        lastInventoryHeader = findViewById(R.id.lastInventoryHeaderView);
+        lastInventoryHeader.addView(getLayoutInflater().inflate(R.layout.last_inventory_header,
+                lastInventoryHeader, false));
+        lastInventoryHeader.setVisibility(GONE);
+        sortSpinner = (Spinner) findViewById(R.id.spinner);
+        ascText = (TextView) findViewById(R.id.ascText);
+        dscText = (TextView) findViewById(R.id.dscText);
+        scanButton = (Button) findViewById(R.id.scanButton);
+        inputButton = (Button) findViewById(R.id.inputButton);
+        switchButton = (Button) findViewById(R.id.switchButton);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        statusView = (TextView) findViewById(R.id.editTextNumber);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        folderView = (TextView) findViewById(R.id.folderView);
+        totalWeightView = (TextView) findViewById(R.id.totalWeightView);
     }
 
     private String processBarcode(String barcode) {
@@ -200,10 +217,39 @@ public class MainActivity extends AppCompatActivity {
             jsonStr = result;
             new Handler(Looper.getMainLooper()).post(() -> {
                 statusView.setText(response.getResponseMessage());
-                updateLotInfo(jsonStr);
+                collectLotInfoAndLastInventory(jsonStr);
             });
         }
     };
+
+    private void collectLotInfoAndLastInventory(String jsonStr) {
+        try {
+            lotSystemInventory = new ObjectMapper().readValue(jsonStr, LotSystemInventory.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //todo throw
+        }
+        if (lotSystemInventory.getPanID() != null) {
+            returnStringFromAPI(lotSystemInventory.getPanID(),
+                    asList(LOCAL_GET_INVENTORY_COUNT_URL, WEB_GET_INVENTORY_COUNT_URL),
+                    callBackFromLastInventoryCount);
+        }
+    }
+
+    private void showItemList(ViewState viewState) {
+        displayLot(lotSystemInventory);
+        if (viewState == LotInfo) {
+            lastInventoryHeader.setVisibility(GONE);
+            lotInfoHeader.setVisibility(VISIBLE);
+            displayTotalWeight(lotSystemInventory.getLotItems());
+            displayLotInfo((lotSystemInventory.getLotItems()), "warehouse", isDescOrder);
+        } else {
+            lastInventoryHeader.setVisibility(VISIBLE);
+            lotInfoHeader.setVisibility(GONE);
+            totalWeightView.setText("");
+            displayLastInventory(lastInventories);
+        }
+    }
 
     private final RepositoryCallBack callBackFromGetFolderList = new RepositoryCallBack() {
         @Override
@@ -221,38 +267,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
             lastInventoryStr = result;
-
             ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
-            List<LastInventory> myObjects = new ArrayList<>();
             try {
-                myObjects = Arrays.asList(objectMapper.readValue(lastInventoryStr, LastInventory[].class));
+                lastInventories = Arrays.asList(objectMapper.readValue(lastInventoryStr, LastInventory[].class));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             new Handler(Looper.getMainLooper()).post(() -> {
                 statusView.setText(response.getResponseMessage());
                 progressBar.setVisibility(GONE);
+                showItemList(viewState);
             });
         }
     };
-
-    private void updateLotInfo(String jsonStr) {
-        try {
-            lotSystemInventory = new ObjectMapper().readValue(jsonStr, LotSystemInventory.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            //todo throw
-        }
-        if (lotSystemInventory.getPanID() != null) {
-            returnStringFromAPI(lotSystemInventory.getPanID(),
-                    asList(LOCAL_GET_INVENTORY_COUNT_URL,WEB_GET_INVENTORY_COUNT_URL),
-                    callBackFromLastInventoryCount);
-        }
-        displayLot(lotSystemInventory);
-        displayTotalWeight(lotSystemInventory.getLotItems());
-        displayList((lotSystemInventory.getLotItems()), "warehouse", isDescOrder);
-        progressBar.setVisibility(GONE);
-    }
 
     private void displayLot(LotSystemInventory lotSystemInventory) {
         if (jsonStr == null) {
@@ -274,13 +301,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void displayList(List<LotItem> lotItems, String sortKey, boolean isDescOrder) {
+    private void displayLotInfo(List<LotItem> lotItems, String sortKey, boolean isDescOrder) {
         if (jsonStr != null) {
             lotItems.sort(new CustomArraySort(sortKey, isDescOrder));
             Adapter listAdapter = new LotInfoViewAdapter(lotItems);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setHasFixedSize(true);
         }
+    }
+
+    private void displayLastInventory(List<LastInventory> lastInventories) {
+        Adapter listAdapter = new LastInventoryViewAdapter(lastInventories);
+        recyclerView.setAdapter(listAdapter);
+        recyclerView.setHasFixedSize(true);
     }
 
     private void loadSpinner(List<String> sortArrayList) {
@@ -323,6 +356,6 @@ public class MainActivity extends AppCompatActivity {
     private void getLotInfoByFolderID(String folder, String lot) {
         progressBar.setVisibility(VISIBLE);
         returnStringFromAPI(lot, asList(LOCAL_GET_LOT_URL + folder + "/", WEB_GET_LOT_URL +
-                        folder + "/"), callBackFromGetLotInfo);
+                folder + "/"), callBackFromGetLotInfo);
     }
 }
