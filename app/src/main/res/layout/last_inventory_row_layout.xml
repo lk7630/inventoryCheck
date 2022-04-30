@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="2dp"
         android:layout_marginTop="2dp"
-        android:stretchColumns="0,1,2,3">
+        android:stretchColumns="1,2,3">
 
         <TableRow
             android:id="@+id/tableRow2"
@@ -32,28 +32,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/warehouseLastInventoryView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Warehouse"
-                android:textAlignment="center"/>
+                android:minEms="4"
+                android:textAlignment="center"
+                android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/packCountLastInventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Packs"
-                android:textAlignment="center"/>
+                android:minEms="2"
+                android:textAlignment="center"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/warehouseLastInventoryView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Warehouse"
+                android:textAlignment="center"
+                android:textSize="20sp"/>
 
             <TextView
                 android:id="@+id/sectionLastinventoryView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Section"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:textSize="20sp"/>
         </TableRow>
 
     </TableLayout>

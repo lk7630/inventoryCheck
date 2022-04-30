@@ -1,5 +1,17 @@
 package com.sunrise.inventoryCheck;
 
+import static android.graphics.Color.GRAY;
+import static android.graphics.Color.RED;
+import static android.graphics.Color.rgb;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static com.sunrise.inventoryCheck.enums.ViewState.LastInventoryCount;
+import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
+import static java.util.Arrays.asList;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -37,18 +49,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-import static android.graphics.Color.GRAY;
-import static android.graphics.Color.RED;
-import static android.graphics.Color.rgb;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static androidx.recyclerview.widget.RecyclerView.Adapter;
-import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
-import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
-import static com.sunrise.inventoryCheck.enums.ViewState.LastInventoryCount;
-import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
-import static java.util.Arrays.asList;
-
 public class MainActivity extends AppCompatActivity {
     public static final String WEB_GET_LOT_URL = "http://38.122.193.242:10081/plastic/GetLotInfo/";
     public static final String LOCAL_GET_LOT_URL = "http://192.168.168.8:10081/plastic/GetLotInfo/";
@@ -57,10 +57,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String WEB_GET_INVENTORY_COUNT_URL = "http://38.122.193.242:10081/plastic/GetInventoryCountInfo/";
     public static final String LOCAL_GET_INVENTORY_COUNT_URL = "http://192.168.168.8:10081/plastic/GetInventoryCountInfo/";
     private String jsonStr;
-    private String lastInventoryStr;
     private final JsonHandler jsonHandler = new JsonHandler();
     private RecyclerView recyclerView;
-    private LayoutManager layoutManager;
     public TextView statusView;
     private TextView folderView;
     private TextView totalWeightView;
@@ -77,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout lastInventoryHeader;
     private ViewState viewState;
     private Button switchButton;
+    private TextView title;
     private List<LastInventory> lastInventories = new ArrayList<>();
 
     @Override
@@ -86,10 +85,9 @@ public class MainActivity extends AppCompatActivity {
         viewState = LastInventoryCount;
         findViews();
         isDescOrder = false;
-        layoutManager = new GridLayoutManager(this, 1);
+        LayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
         lotSystemInventory = new LotSystemInventory();
-
         //back from Activity
         ActivityResultLauncher<Intent> scanActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -129,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        List<String> sortArrayList = asList("warehouse", "polymer", "packing");
+        List<String> sortArrayList = asList("warehouse", "polymer", "packing", "weight");
         loadSpinner(sortArrayList);
         ascText.setOnClickListener(v -> {
             isDescOrder = false;
@@ -179,17 +177,18 @@ public class MainActivity extends AppCompatActivity {
         lastInventoryHeader.addView(getLayoutInflater().inflate(R.layout.last_inventory_header,
                 lastInventoryHeader, false));
         lastInventoryHeader.setVisibility(GONE);
-        sortSpinner = (Spinner) findViewById(R.id.spinner);
-        ascText = (TextView) findViewById(R.id.ascText);
-        dscText = (TextView) findViewById(R.id.dscText);
-        scanButton = (Button) findViewById(R.id.scanButton);
-        inputButton = (Button) findViewById(R.id.inputButton);
-        switchButton = (Button) findViewById(R.id.switchButton);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        statusView = (TextView) findViewById(R.id.editTextNumber);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        folderView = (TextView) findViewById(R.id.folderView);
-        totalWeightView = (TextView) findViewById(R.id.totalWeightView);
+        sortSpinner = findViewById(R.id.spinner);
+        ascText = findViewById(R.id.ascText);
+        dscText = findViewById(R.id.dscText);
+        scanButton = findViewById(R.id.scanButton);
+        inputButton = findViewById(R.id.inputButton);
+        switchButton = findViewById(R.id.switchButton);
+        progressBar = findViewById(R.id.progressBar);
+        statusView = findViewById(R.id.editTextNumber);
+        recyclerView = findViewById(R.id.recyclerView);
+        folderView = findViewById(R.id.folderView);
+        totalWeightView = findViewById(R.id.totalWeightView);
+        title = findViewById(R.id.titleView);
     }
 
     private String processBarcode(String barcode) {
@@ -239,11 +238,13 @@ public class MainActivity extends AppCompatActivity {
     private void showItemList(ViewState viewState) {
         displayLot(lotSystemInventory);
         if (viewState == LotInfo) {
+            title.setText("SYSTEM LOT INFO");
             lastInventoryHeader.setVisibility(GONE);
             lotInfoHeader.setVisibility(VISIBLE);
             displayTotalWeight(lotSystemInventory.getLotItems());
             displayLotInfo((lotSystemInventory.getLotItems()), "warehouse", isDescOrder);
         } else {
+            title.setText("LAST INVENTORY COUNT");
             lastInventoryHeader.setVisibility(VISIBLE);
             lotInfoHeader.setVisibility(GONE);
             totalWeightView.setText("");
@@ -266,10 +267,9 @@ public class MainActivity extends AppCompatActivity {
     private final RepositoryCallBack callBackFromLastInventoryCount = new RepositoryCallBack() {
         @Override
         public void onReadComplete(String result, CustomResponse response) {
-            lastInventoryStr = result;
             ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
             try {
-                lastInventories = Arrays.asList(objectMapper.readValue(lastInventoryStr, LastInventory[].class));
+                lastInventories = Arrays.asList(objectMapper.readValue(result, LastInventory[].class));
             } catch (Exception e) {
                 e.printStackTrace();
             }
