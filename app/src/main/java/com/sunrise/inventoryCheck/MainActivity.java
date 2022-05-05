@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        List<String> sortArrayList = asList("warehouse", "polymer", "packing", "weight");
+        List<String> sortArrayList = asList("warehouse", "polymer", "packing", "weight",
+                "compartment");
         loadSpinner(sortArrayList);
         ascText.setOnClickListener(v -> {
             isDescOrder = false;
