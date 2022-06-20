@@ -51,6 +51,7 @@ public class HttpHandler {
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(2000);
             Log.e("response: ", conn.getResponseMessage());
+            Log.e("response code: ", String.valueOf(conn.getResponseCode()));
             //todo add logging service here to log connection_ok
             InputStream in = new BufferedInputStream(conn.getInputStream());
             downloadContent = convertStreamToString(in);

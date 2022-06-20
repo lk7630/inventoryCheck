@@ -1,10 +1,5 @@
 package com.sunrise.inventoryCheck;
 
-import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
-import static com.sunrise.inventoryCheck.enums.ErrorMessage.InvalidUrl;
-import static com.sunrise.inventoryCheck.enums.ErrorMessage.NonNumericString;
-import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
-
 import android.util.Log;
 
 import com.sunrise.inventoryCheck.enums.CustomResponse;
@@ -14,6 +9,11 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.InvalidUrl;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.NonNumericString;
+import static com.sunrise.inventoryCheck.enums.ErrorMessage.NullUrl;
 
 public class StringFromURLHandler {
 
@@ -54,7 +54,7 @@ public class StringFromURLHandler {
     }
 
     public void getStringFromURL(String param, RepositoryCallBack callBack) {
-        if (param == null) {
+        if (param == null || param.equals("")) {
             getStringFromURL(callBack);
         } else {
             Pattern pattern = Pattern.compile("^\\d+$");
@@ -78,7 +78,7 @@ public class StringFromURLHandler {
                 if (jsonStr == null) {
                     jsonStr = returnString(backupUrl, true);
                 }
-                if (jsonStr!=null) {
+                if (jsonStr != null) {
                     Log.e("Return string:", jsonStr);
                 }
                 callBack.onReadComplete(jsonStr, response);

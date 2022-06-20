@@ -13,6 +13,7 @@ import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
 import static com.sunrise.inventoryCheck.enums.ViewState.LastInventoryCount;
 import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -46,6 +47,7 @@ import com.sunrise.inventoryCheck.enums.ViewState;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -151,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         });
         scanButton.setOnClickListener(v -> {
             statusView.setText("");
+            lotSystemInventory.setLotItems(emptyList());
+            lastInventories = new ArrayList<>();
             Intent scanIntent = new Intent(this, BarcodeScanActivity.class);
             scanActivityLauncher.launch(scanIntent);
         });
@@ -213,17 +217,6 @@ public class MainActivity extends AppCompatActivity {
         stringFromURLHandler.getStringFromURL(param, callBack);
     }
 
-    private final RepositoryCallBack callBackFromGetLotInfo = new RepositoryCallBack() {
-        @Override
-        public void onReadComplete(String result, CustomResponse response) {
-            jsonStr = result;
-            new Handler(Looper.getMainLooper()).post(() -> {
-                statusView.setText(response.getResponseMessage());
-                collectLotInfoAndLastInventory(jsonStr);
-            });
-        }
-    };
-
     private void collectLotInfoAndLastInventory(String jsonStr) {
         try {
             lotSystemInventory = new ObjectMapper().readValue(jsonStr, LotSystemInventory.class);
@@ -254,6 +247,17 @@ public class MainActivity extends AppCompatActivity {
             displayLastInventory(lastInventories);
         }
     }
+
+    private final RepositoryCallBack callBackFromGetLotInfo = new RepositoryCallBack() {
+        @Override
+        public void onReadComplete(String result, CustomResponse response) {
+            jsonStr = result;
+            new Handler(Looper.getMainLooper()).post(() -> {
+                statusView.setText(response.getResponseMessage());
+                collectLotInfoAndLastInventory(jsonStr);
+            });
+        }
+    };
 
     private final RepositoryCallBack callBackFromGetFolderList = new RepositoryCallBack() {
         @Override
@@ -289,6 +293,8 @@ public class MainActivity extends AppCompatActivity {
     private void displayLot(LotSystemInventory lotSystemInventory) {
         if (jsonStr == null) {
             folderView.setText("NO INFO");
+        } else if (lotSystemInventory.getFolder() == null) {
+            folderView.setText("LOT NOT EXISTED");
         } else {
             folderView.setText(String.format("%s - %s", lotSystemInventory.getFolder(),
                     lotSystemInventory.getLot()));
