@@ -8,6 +8,8 @@ import static android.view.View.VISIBLE;
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 import static androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import static com.sunrise.inventoryCheck.BarcodeScanActivity.BARCODE_KEY;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ConnectionOK;
+import static com.sunrise.inventoryCheck.enums.CustomResponse.ReadSuccess;
 import static com.sunrise.inventoryCheck.enums.ViewState.LastInventoryCount;
 import static com.sunrise.inventoryCheck.enums.ViewState.LotInfo;
 import static java.util.Arrays.asList;
@@ -260,7 +262,9 @@ public class MainActivity extends AppCompatActivity {
             new Handler(Looper.getMainLooper()).post(() -> {
                 statusView.setText(response.getResponseMessage());
                 progressBar.setVisibility(GONE);
-                showDialog();
+                if (response == ConnectionOK || response == ReadSuccess) {
+                    showDialog();
+                }
             });
         }
     };
